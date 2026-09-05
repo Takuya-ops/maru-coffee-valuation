@@ -165,13 +165,13 @@ button:hover{background:var(--paper-deep)}
 <header class="top">
   <p class="crumb">← <a href="../">まる珈琲の値段</a> ／ 実装ノート</p>
   <h1>スクロールを数字に変える</h1>
-  <p class="lede">「まる珈琲の値段」で使ったアニメーションの作り方を、全部ひらいて説明します。ライブラリはひとつも使っていません。各節に<strong>スライダーで動かせる実験台</strong>を置いたので、数字を動かして結果を確かめながら読んでください。</p>
+  <p class="lede">「まる珈琲の値段」で使ったアニメーションの作り方を、全部ひらいて説明します。<strong>アニメーションにライブラリは一つも使っていません</strong>。すべてブラウザの標準機能です。各節に<strong>スライダーで動かせる実験台</strong>を置いたので、数字を動かして結果を確かめながら読んでください。</p>
   <div class="meta">
     <span class="tag">CSS custom properties</span>
     <span class="tag">clamp()</span>
     <span class="tag">SVG filters</span>
     <span class="tag">IntersectionObserver</span>
-    <span class="tag">no dependencies</span>
+    <span class="tag">no animation library</span>
   </div>
 </header>
 
@@ -699,7 +699,7 @@ if (!mq.matches) document.documentElement.classList.add('motion');</code></pre>
 
 <footer class="foot">
   <p><a href="../">← まる珈琲の値段（本編）へ戻る</a></p>
-  <p class="small">このページのデモはすべてこのファイル内で完結しています。ソース: <a href="https://github.com/Takuya-ops/maru-coffee-valuation">github.com/Takuya-ops/maru-coffee-valuation</a></p>
+  <p class="small">デモはすべてこのファイル内で完結しています（このノートだけは、コード例の色分けに highlight.js を CDN から読み込んでいます。本編の <code>index.html</code> は外部依存ゼロです）。ソース: <a href="https://github.com/Takuya-ops/maru-coffee-valuation">github.com/Takuya-ops/maru-coffee-valuation</a></p>
 </footer>
 </div>
 
