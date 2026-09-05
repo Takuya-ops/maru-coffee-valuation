@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>スクロールを数字に変える</title>
+<meta name="description" content="「まる珈琲の値段」で使ったスクロール連動アニメーションの実装解説。CSS変数・clamp・stroke-dasharray・SVGフィルタを、スライダーで動かせるデモ付きで説明します。">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="スクロールを数字に変える">
+<meta property="og:description" content="スクロール連動アニメーションの実装解説。CSS変数・clamp・stroke-dasharray・SVGフィルタを、動かせるデモ付きで。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#128736;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Klee+One:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#EEEDE3; --paper-deep:#E4E3D6; --card:#F8F7EF; --card-2:#F2F1E6;
+  --ink:#1D262C; --ink-2:#4A555E; --ink-3:#7C868F;
+  --rule:rgba(29,38,44,.16); --rule-2:rgba(29,38,44,.30);
+  --ai:#27507F; --ai-2:#5C86B6; --bengara:#9E4B3A; --matcha:#5F7D4B; --koji:#B5851F;
+  --code-bg:#F4F2E8; --code-ink:#2A343B;
+  --tok-key:#8A4230; --tok-str:#4F7040; --tok-num:#27507F; --tok-com:#8A939A; --tok-tag:#27507F; --tok-attr:#8A6420;
+  --coin-face:#D8AE4A; --coin-edge:#A87C22;
+  --sh-1:0 1px 2px rgba(29,38,44,.06), 0 8px 20px -14px rgba(29,38,44,.30);
+  --sh-2:0 2px 4px rgba(29,38,44,.08), 0 22px 46px -22px rgba(29,38,44,.40);
+  --wash-blend:multiply; --wash-op:.34;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#131920; --paper-deep:#0E1319; --card:#1B232B; --card-2:#202932;
+    --ink:#EBE7DB; --ink-2:#AFB7BD; --ink-3:#7E888F;
+    --rule:rgba(235,231,219,.15); --rule-2:rgba(235,231,219,.30);
+    --ai:#8DB4E2; --ai-2:#5C86B6; --bengara:#D9856F; --matcha:#9DBE85; --koji:#DFB65C;
+    --code-bg:#161D24; --code-ink:#D9DBD3;
+    --tok-key:#E09B84; --tok-str:#A6C98C; --tok-num:#9CC2EE; --tok-com:#6E7880; --tok-tag:#8DB4E2; --tok-attr:#D9B45C;
+    --coin-face:#D9B45C; --coin-edge:#96712A;
+    --sh-1:0 1px 2px rgba(0,0,0,.34), 0 8px 22px -14px rgba(0,0,0,.6);
+    --sh-2:0 2px 6px rgba(0,0,0,.4), 0 24px 50px -24px rgba(0,0,0,.75);
+    --wash-blend:screen; --wash-op:.26;
+  }
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  font-size:16px; line-height:1.95; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;font-weight:700;margin:0;line-height:1.5;text-wrap:balance}
+p{margin:0}
+a{color:var(--ai);text-underline-offset:3px}
+:focus-visible{outline:2.5px solid var(--ai);outline-offset:3px;border-radius:2px}
+code,kbd{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(1.1rem,4vw,2.6rem)}
+
+/* ---- header ---- */
+.top{padding:clamp(2.4rem,6vh,4.2rem) 0 clamp(1.6rem,4vh,2.6rem);border-bottom:1px solid var(--rule)}
+.crumb{font-family:"Klee One",cursive;font-size:.9rem;color:var(--bengara);letter-spacing:.06em;margin-bottom:.8rem}
+.crumb a{color:var(--bengara)}
+h1{font-size:clamp(2rem,4.4vw,3.1rem);font-weight:800;letter-spacing:.01em}
+.lede{margin-top:1.1rem;max-width:40rem;color:var(--ink-2);font-size:1.02rem}
+.meta{margin-top:1.4rem;display:flex;flex-wrap:wrap;gap:.5rem}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:.78rem;padding:.25rem .6rem;border:1px solid var(--rule-2);border-radius:2px;color:var(--ink-3)}
+
+/* ---- layout ---- */
+.doc{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(2rem,4vw,3.4rem);padding:clamp(2rem,5vh,3.4rem) 0 4rem}
+@media (min-width:1040px){.doc{grid-template-columns:14.5rem minmax(0,1fr)}}
+.toc{align-self:start;font-size:.9rem}
+@media (min-width:1040px){.toc{position:sticky;top:1.6rem;max-height:calc(100vh - 3rem);overflow-y:auto}}
+.toc h2{font-family:"Klee One",cursive;font-size:.85rem;letter-spacing:.14em;color:var(--bengara);margin-bottom:.7rem;font-weight:600}
+.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:.1rem}
+.toc a{display:block;padding:.3rem .5rem;border-radius:2px;color:var(--ink-2);text-decoration:none;border-left:2px solid transparent;line-height:1.6}
+.toc a:hover{background:var(--card);color:var(--ink)}
+.toc a.on{border-left-color:var(--bengara);color:var(--ink);background:var(--card)}
+.toc .n{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-3);margin-right:.45rem}
+
+.body{max-width:44rem;min-width:0}
+section{padding-top:clamp(2.2rem,5vh,3.4rem);scroll-margin-top:1.5rem}
+section > h2{font-size:clamp(1.35rem,2.6vw,1.75rem);margin-bottom:.9rem}
+section > h2 .n{font-family:"IBM Plex Mono",monospace;font-size:.7em;color:var(--bengara);margin-right:.7rem;font-weight:500}
+h3{font-size:1.06rem;margin:2rem 0 .7rem;color:var(--ink)}
+.body p{color:var(--ink-2);margin:1rem 0}
+.body p strong{color:var(--ink);font-weight:700}
+.body p code, .body li code, td code{background:var(--code-bg);padding:.1em .38em;border-radius:2px;font-size:.88em;color:var(--code-ink)}
+.body ul,.body ol{color:var(--ink-2);padding-left:1.3rem;margin:1rem 0}
+.body li{margin:.35rem 0}
+.lead-in{font-size:1.04rem}
+
+/* ---- code ---- */
+pre{
+  margin:1.3rem 0;padding:1rem 1.1rem;background:var(--code-bg);border:1px solid var(--rule);
+  border-radius:3px;overflow-x:auto;font-size:.86rem;line-height:1.8;color:var(--code-ink);
+}
+pre code{font-family:"IBM Plex Mono",ui-monospace,monospace;background:none;padding:0}
+.hljs-keyword,.hljs-selector-tag,.hljs-literal,.hljs-built_in,.hljs-name{color:var(--tok-key)}
+.hljs-string,.hljs-selector-class,.hljs-selector-pseudo{color:var(--tok-str)}
+.hljs-number,.hljs-selector-id{color:var(--tok-num)}
+.hljs-comment{color:var(--tok-com);font-style:italic}
+.hljs-tag{color:var(--tok-tag)}
+.hljs-attr,.hljs-attribute,.hljs-property{color:var(--tok-attr)}
+.hljs-title,.hljs-function .hljs-title{color:var(--tok-num)}
+.cap{font-family:"Klee One",cursive;font-size:.85rem;color:var(--ink-3);margin-top:-.9rem;margin-bottom:1.3rem;display:block}
+
+/* ---- callout ---- */
+.note{border-left:2px solid var(--rule-2);padding:.2rem 0 .2rem 1.1rem;margin:1.4rem 0;font-family:"Klee One",cursive;font-size:.93rem;color:var(--ink-3);line-height:1.85}
+.warn{border-left-color:var(--bengara);color:var(--ink-2)}
+.warn b{color:var(--bengara);font-family:"Zen Kaku Gothic New",sans-serif}
+
+/* ---- table ---- */
+.tw{overflow-x:auto;margin:1.4rem 0}
+table{width:100%;border-collapse:collapse;min-width:26rem;font-size:.92rem}
+th,td{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-family:"Klee One",cursive;font-size:.84rem;letter-spacing:.08em;color:var(--bengara);border-bottom:1px solid var(--rule-2);font-weight:600}
+tbody td:first-child{font-family:"IBM Plex Mono",monospace;color:var(--ink);white-space:nowrap}
+
+/* ---- demo ---- */
+.demo{border:1px solid var(--rule-2);border-radius:4px;background:var(--card);box-shadow:var(--sh-1);margin:1.6rem 0 .5rem;overflow:hidden}
+.demo-head{
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  padding:.6rem 1rem;border-bottom:1px solid var(--rule);background:var(--card-2);
+  font-family:"Klee One",cursive;font-size:.82rem;letter-spacing:.12em;color:var(--bengara);
+}
+.demo-head .hint{font-family:"Zen Kaku Gothic New",sans-serif;letter-spacing:0;color:var(--ink-3);font-size:.8rem}
+.demo-stage{
+  padding:1.2rem;position:relative;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:26px 26px;background-position:-1px -1px;
+}
+.demo-ctrl{display:grid;gap:.6rem;padding:.9rem 1.1rem;border-top:1px solid var(--rule);background:var(--card-2)}
+.ctrl{display:grid;grid-template-columns:minmax(6rem,9.5rem) minmax(0,1fr) 4.6rem;gap:.4rem .8rem;align-items:center;font-size:.84rem}
+.ctrl > label{color:var(--ink-2);font-family:"IBM Plex Mono",monospace;font-size:.8rem}
+.ctrl output{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--ai);text-align:right;font-size:.86rem}
+input[type=range]{width:100%;accent-color:var(--bengara);height:1.4rem}
+button{
+  font-family:"Zen Kaku Gothic New",sans-serif;font-size:.85rem;padding:.4rem .9rem;cursor:pointer;
+  background:var(--card);color:var(--ink);border:1px solid var(--rule-2);border-radius:2px;
+}
+button:hover{background:var(--paper-deep)}
+.btnrow{display:flex;gap:.5rem;flex-wrap:wrap}
+.readout{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:.82rem;color:var(--ink-2)}
+
+/* scroll sandbox */
+.sbox{height:260px;overflow-y:auto;border:1px solid var(--rule-2);border-radius:3px;background:var(--paper);position:relative}
+.sbox .spacer{height:150px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:.82rem;font-family:"Klee One",cursive}
+.sbox .midline{position:sticky;top:130px;height:0;z-index:2;pointer-events:none}
+.sbox .midline::before{content:"";display:block;border-top:1px dashed var(--bengara);opacity:.5}
+.target{
+  margin:0 1rem;height:110px;border:1.5px solid var(--ai);border-radius:3px;background:var(--card);
+  display:flex;align-items:center;justify-content:center;gap:1.2rem;
+  font-family:"IBM Plex Mono",monospace;font-size:.82rem;color:var(--ink-2);
+}
+.gauge{width:96px}
+.gauge .bar{height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.gauge .bar i{display:block;height:100%;background:var(--ai);width:calc(var(--v,0) * 100%)}
+.gauge .lb{font-size:.72rem;color:var(--ink-3);margin-bottom:.25rem}
+.gauge .vv{font-variant-numeric:tabular-nums;color:var(--ai);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="crumb">← <a href="../">まる珈琲の値段</a> ／ 実装ノート</p>
+  <h1>スクロールを数字に変える</h1>
+  <p class="lede">「まる珈琲の値段」で使ったアニメーションの作り方を、全部ひらいて説明します。ライブラリはひとつも使っていません。各節に<strong>スライダーで動かせる実験台</strong>を置いたので、数字を動かして結果を確かめながら読んでください。</p>
+  <div class="meta">
+    <span class="tag">CSS custom properties</span>
+    <span class="tag">clamp()</span>
+    <span class="tag">SVG filters</span>
+    <span class="tag">IntersectionObserver</span>
+    <span class="tag">no dependencies</span>
+  </div>
+</header>
+
+<div class="doc">
+  <nav class="toc" aria-label="目次">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#s0"><span class="n">00</span>全体の設計</a></li>
+      <li><a href="#s1"><span class="n">01</span>スクロールを数字にする</a></li>
+      <li><a href="#s2"><span class="n">02</span>CSS変数のバケツリレー</a></li>
+      <li><a href="#s3"><span class="n">03</span>イベントを間引く</a></li>
+      <li><a href="#s4"><span class="n">04</span>動かしていい2つ</a></li>
+      <li><a href="#s5"><span class="n">05</span>clampで時間差を作る</a></li>
+      <li><a href="#s6"><span class="n">06</span>線を描くアニメーション</a></li>
+      <li><a href="#s7"><span class="n">07</span>一度だけ発火させる</a></li>
+      <li><a href="#s8"><span class="n">08</span>手描きと水彩の作り方</a></li>
+      <li><a href="#s9"><span class="n">09</span>立体に見せる</a></li>
+      <li><a href="#s10"><span class="n">10</span>壊れない設計</a></li>
+      <li><a href="#end"><span class="n">--</span>まとめ</a></li>
+    </ol>
+  </nav>
+
+  <main class="body">
+
+<section id="s0">
+  <h2><span class="n">00</span>全体の設計</h2>
+  <p class="lead-in">最初にここを掴むと、あとの話が全部つながります。素朴に作ると、こういう JavaScript を書きたくなります。</p>
+
+<pre><code class="language-javascript">// よくある書き方
+window.addEventListener('scroll', () =&gt; {
+  coin.style.transform = 'translateY(' + y + 'px)';
+  coin.style.opacity   = op;
+  sack.style.transform = 'translateX(' + x + 'px)';
+  // ...動かしたい要素の数だけ延々と続く
+});</code></pre>
+
+  <p>これだと、要素が増えるたびに JavaScript が太っていきます。本編にはコイン 10 枚、タイル 6 枚、袋、金庫、棒グラフ…と数十個あるので、この書き方では破綻します。</p>
+  <p>そこで<strong>役割を分けました</strong>。JavaScript は「このセクションは今、何%まで進んだか」という<strong>数字を 2 つ書くだけ</strong>。それを受けて、コインが何枚出るか・袋がどこまで動くかは、CSS 側が各自で決めます。</p>
+
+  <div class="demo">
+    <div class="demo-head"><span>設計図</span></div>
+    <div class="demo-stage">
+      <svg viewBox="0 0 700 230" role="img" aria-label="スクロールイベントからJavaScriptが2つの数字を書き、CSS変数の継承で各要素が自分で計算する流れ図。">
+        <g font-family="Zen Kaku Gothic New, sans-serif" font-size="13">
+          <rect x="6" y="18" width="120" height="46" rx="3" fill="var(--card-2)" stroke="var(--rule-2)"/>
+          <text x="66" y="46" text-anchor="middle" fill="var(--ink-2)">スクロール</text>
+
+          <rect x="168" y="8" width="200" height="66" rx="3" fill="var(--card-2)" stroke="var(--ai)" stroke-width="1.5"/>
+          <text x="268" y="32" text-anchor="middle" fill="var(--ai)" font-size="12" font-family="IBM Plex Mono, monospace">JavaScript</text>
+          <text x="268" y="55" text-anchor="middle" fill="var(--ink)">--p と --c を書くだけ</text>
+
+          <rect x="410" y="8" width="284" height="66" rx="3" fill="var(--card-2)" stroke="var(--rule-2)"/>
+          <text x="552" y="32" text-anchor="middle" fill="var(--bengara)" font-size="12" font-family="IBM Plex Mono, monospace">&lt;section style="--p: 0.62"&gt;</text>
+          <text x="552" y="55" text-anchor="middle" fill="var(--ink-2)">セクション要素</text>
+
+          <path d="M130 41 H162" fill="none" stroke="var(--ink-3)" stroke-width="1.5"/>
+          <path d="M156 36 l7 5 l-7 5" fill="none" stroke="var(--ink-3)" stroke-width="1.5"/>
+          <path d="M372 41 H404" fill="none" stroke="var(--ink-3)" stroke-width="1.5"/>
+          <path d="M398 36 l7 5 l-7 5" fill="none" stroke="var(--ink-3)" stroke-width="1.5"/>
+
+          <path d="M552 78 V104" fill="none" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <text x="562" y="98" fill="var(--matcha)" font-size="12">CSS変数は子孫に継承される</text>
+
+          <path d="M180 104 H694" fill="none" stroke="var(--rule-2)" stroke-width="1.5"/>
+          <path d="M180 104 V126 M320 104 V126 M460 104 V126 M600 104 V126" fill="none" stroke="var(--rule-2)" stroke-width="1.5"/>
+
+          <g fill="var(--card)" stroke="var(--rule-2)">
+            <rect x="120" y="126" width="120" height="72" rx="3"/>
+            <rect x="260" y="126" width="120" height="72" rx="3"/>
+            <rect x="400" y="126" width="120" height="72" rx="3"/>
+            <rect x="540" y="126" width="120" height="72" rx="3"/>
+          </g>
+          <g text-anchor="middle" font-size="12">
+            <text x="180" y="148" fill="var(--ink)">コイン</text>
+            <text x="320" y="148" fill="var(--ink)">タイル</text>
+            <text x="460" y="148" fill="var(--ink)">借金の袋</text>
+            <text x="600" y="148" fill="var(--ink)">棒グラフ</text>
+          </g>
+          <g text-anchor="middle" font-size="10.5" font-family="IBM Plex Mono, monospace" fill="var(--ink-3)">
+            <text x="180" y="170">clamp(--p)</text><text x="180" y="186">で1枚ずつ</text>
+            <text x="320" y="170">clamp(--p)</text><text x="320" y="186">で6枚</text>
+            <text x="460" y="170">translateX</text><text x="460" y="186">(--p)</text>
+            <text x="600" y="170">scaleX</text><text x="600" y="186">(--p)</text>
+          </g>
+          <text x="350" y="222" text-anchor="middle" fill="var(--ink-3)" font-size="12">それぞれが同じ --p を読んで、自分の動きを自分で計算する</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <p>この受け渡しに使うのが <strong>CSS カスタムプロパティ（CSS 変数）</strong> です。おかげで本編の JavaScript は全体で 60 行ほどに収まっています。</p>
+</section>
+
+<section id="s1">
+  <h2><span class="n">01</span>スクロールを数字にする</h2>
+  <p class="lead-in">まず「どのくらいスクロールしたか」を測ります。<code>getBoundingClientRect()</code> を使うと、要素が今、画面のどのへんにいるかが取れます。</p>
+
+<pre><code class="language-javascript">var r = el.getBoundingClientRect();
+// r.top    → 要素の上端が、画面の上端から何px下にあるか
+// r.height → 要素自体の高さ
+// vh       → 画面の高さ (window.innerHeight)</code></pre>
+
+  <p><code>r.top</code> が<strong>画面基準</strong>なのがポイントです。スクロールすると勝手に減っていきます。要素が画面のずっと下にあれば +2000 のような大きな正の数、通り過ぎて上に消えれば負の数になります。これを 0〜1 に変換します。</p>
+
+<pre><code class="language-javascript">var p = (vh - r.top) / (vh + r.height);
+p = p &lt; 0 ? 0 : (p &gt; 1 ? 1 : p);   // 0〜1 からはみ出さないよう固定
+
+var c = ((r.top + r.height / 2) - vh / 2) / vh;</code></pre>
+
+  <p>分母が <code>vh + r.height</code> なのは、「画面の下から入ってきて、上から出ていくまで」の総移動距離がそれだからです。<code>--c</code> のほうは<strong>画面中心からのズレ</strong>で、要素が画面より下なら +、上なら −、ちょうど中央で 0 になります。傾きの計算に使います。</p>
+
+  <div class="demo" id="d1">
+    <div class="demo-head"><span>実験 01 — 進行度を見る</span><span class="hint">枠の中をスクロールしてください</span></div>
+    <div class="demo-stage" style="padding:0;background:none">
+      <div class="sbox" id="d1box">
+        <div class="midline"></div>
+        <div class="spacer">↓ ここをスクロール</div>
+        <div class="target" id="d1t">
+          <div class="gauge"><div class="lb">--p（進行度）</div><div class="vv" id="d1p">0.000</div><div class="bar"><i id="d1pb"></i></div></div>
+          <div class="gauge"><div class="lb">--c（中心のズレ）</div><div class="vv" id="d1c">0.000</div><div class="bar"><i id="d1cb"></i></div></div>
+        </div>
+        <div class="spacer">↑ 戻る</div>
+      </div>
+    </div>
+    <div class="demo-ctrl"><p class="readout" id="d1r">枠内をスクロールすると数字が動きます</p></div>
+  </div>
+  <span class="cap">破線が枠の中央です。要素の中心がここに重なると --c が 0 になります。</span>
+
+  <p>実際に動かすと分かりますが、<code>--p</code> は下から入ってきた瞬間が 0、通り抜けた瞬間が 1。<code>--c</code> は中央で符号が入れ替わります。<strong>この 2 つの数字だけで、あとの動きは全部作れます。</strong></p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">02</span>CSS変数のバケツリレー</h2>
+  <p class="lead-in">計算した値は、要素に直接書き込みます。</p>
+
+<pre><code class="language-javascript">el.style.setProperty('--p', p.toFixed(4));
+el.style.setProperty('--c', c.toFixed(4));</code></pre>
+
+  <p><code>setProperty</code> は、style 属性に <code>--p: 0.6231</code> と書くのと同じことです。ここで効いてくるのが、<strong>CSS 変数は子孫要素に自動で継承される</strong>という性質。セクションに書けば、その中の全員が読めます。JavaScript から個々の要素を探しに行く必要がありません。</p>
+
+<pre><code class="language-css">html.motion .sack{
+  transform: translateX(calc((1 - var(--p)) * 130px));
+}</code></pre>
+
+  <p><code>--p</code> が 0 のとき <code>(1-0) × 130px</code> で右に 130px ずれた位置。1 になると 0、つまり定位置。<strong>借金の袋が右から滑り込んでくるのは、この 1 行だけです。</strong>2 軸同時に動かすのも同じ要領。</p>
+
+<pre><code class="language-css">html.motion .cashbox{
+  transform: translate(calc((1 - var(--p)) * 44px), calc(var(--p) * -32px));
+}</code></pre>
+
+  <p>横は近づき、縦は <code>--p</code> が増えるほどマイナス方向＝上へ浮き上がる。式を差し替えるだけで動きの性格が変わるので、調整がとても速くなります。</p>
+  <p class="note">CSS 変数は「値の入れ物」であって「計算結果」ではありません。<code>--p</code> が変わると、それを使っている全ての <code>calc()</code> が自動的に再計算されます。JavaScript から再計算を指示する必要はありません。</p>
+</section>
+
+<section id="s3">
+  <h2><span class="n">03</span>イベントを間引く</h2>
+  <p class="lead-in">スクロールイベントは 1 回のスワイプで何十回も飛んできます。毎回まじめに処理すると重くなるので、<code>requestAnimationFrame</code> で<strong>画面の描画タイミングに合わせて 1 回だけ</strong>実行します。</p>
+
+<pre><code class="language-javascript">var pending = false;
+
+function onScroll(){
+  if (!pending) {              // すでに予約済みなら何もしない
+    pending = true;
+    requestAnimationFrame(update);
+  }
+}
+function update(){
+  pending = false;             // 実行したら予約を解除
+  /* ... 計算 ... */
+}
+window.addEventListener('scroll', onScroll, { passive: true });</code></pre>
+
+  <p><code>pending</code> フラグが肝です。イベントが 30 回飛んできても、次の描画までに実行されるのは 1 回だけ。この形は <strong>rAF スロットリング</strong>と呼ばれる定番パターンで、resize や mousemove にもそのまま使えます。</p>
+  <p><code>{ passive: true }</code> は「このリスナーは <code>preventDefault()</code> を呼びません」という宣言です。ブラウザはスクロールを止める必要がないと分かるので、リスナーの完了を待たずに画面を動かせます。スマホでの指の追従が目に見えて変わります。</p>
+  <p>さらに、画面外のセクションは計算ごと飛ばしています。</p>
+
+<pre><code class="language-javascript">if (r.bottom &lt; -vh || r.top &gt; vh * 2) continue;</code></pre>
+</section>
+
+<section id="s4">
+  <h2><span class="n">04</span>動かしていいのは 2 つだけ</h2>
+  <p class="lead-in">これが今回いちばん大事な原則です。ブラウザは画面を描くのに 3 段階を踏みます。</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>段階</th><th>やること</th><th>コスト</th></tr></thead>
+      <tbody>
+        <tr><td>① Layout</td><td>どこに何を置くか計算する</td><td>重い</td></tr>
+        <tr><td>② Paint</td><td>ピクセルに色を塗る</td><td>そこそこ重い</td></tr>
+        <tr><td>③ Composite</td><td>できた層を重ねる（GPU が担当）</td><td>軽い</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><code>width</code> <code>height</code> <code>top</code> <code>left</code> <code>margin</code> などを変えると<strong>①から全部やり直し</strong>になります。60 分の 1 秒ごとにこれをやるとカクつきます。いっぽう <strong><code>transform</code> と <code>opacity</code> は ③ だけで済みます</strong>。要素の中身はすでに画像として GPU に載っているので、それを動かしたり透かしたりするだけです。</p>
+
+<pre><code class="language-css">/* カクつく — 毎フレーム Layout からやり直し */
+.sack{ left: calc((1 - var(--p)) * 130px); }
+
+/* 滑らか — Composite だけで済む */
+.sack{ transform: translateX(calc((1 - var(--p)) * 130px)); }</code></pre>
+
+  <div class="demo" id="d2">
+    <div class="demo-head"><span>実験 02 — left と transform</span><span class="hint">要素数を増やして再生してみてください</span></div>
+    <div class="demo-stage">
+      <div class="lane"><span class="lane-lb">left で動かす（Layout → Paint → Composite）</span><div class="dots" id="d2a"></div></div>
+      <div class="lane"><span class="lane-lb">transform で動かす（Composite のみ）</span><div class="dots" id="d2b"></div></div>
+    </div>
+    <div class="demo-ctrl">
+      <div class="ctrl"><label for="d2n">要素数（各レーン）</label><input type="range" id="d2n" min="40" max="800" step="40" value="240"><output id="d2no">240</output></div>
+      <div class="btnrow">
+        <button id="d2left">left で再生</button>
+        <button id="d2tr">transform で再生</button>
+        <button id="d2stop">停止</button>
+        <span class="readout" id="d2fps">停止中</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="note warn"><b>正直な注記。</b>最近の PC は速いので、要素数が少ないうちは両者に差が出ません。スライダーを 600 以上に上げ、<code>left</code> 側の fps が落ちるかを見てください。差が開かない環境もありますが、<strong>そのときも仕組み上の負荷差は存在します</strong>。古いスマホや、要素が重いページで顕在化します。ブラウザの DevTools の Performance タブで記録すると、<code>left</code> 側にだけ紫色の Layout が並ぶのが見えます。</p>
+  <p><strong>アニメーションは transform と opacity だけ</strong> — まずこれを体に入れておくと、たいていの「なんか重い」は避けられます。</p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">05</span>clampで時間差を作る</h2>
+  <p class="lead-in">コインが下から 1 枚ずつ積み上がる部分です。ここは <strong>JavaScript を一切使っていません</strong>。まず HTML 側で、各コインに通し番号を持たせます。</p>
+
+<pre><code class="language-xml">&lt;g class="coin" style="--i:0"&gt;&lt;use href="#coinshape"/&gt;&lt;/g&gt;
+&lt;g class="coin" style="--i:1"&gt;&lt;use href="#coinshape"/&gt;&lt;/g&gt;
+&lt;g class="coin" style="--i:2"&gt;&lt;use href="#coinshape"/&gt;&lt;/g&gt;
+&lt;!-- ... --i:9 まで --&gt;</code></pre>
+
+  <p>CSS はこれだけです。</p>
+
+<pre><code class="language-css">html.motion .coin{
+  --k:  calc((var(--p) - .2) * 16);
+  --on: clamp(0, calc(var(--k) - var(--i)), 1);
+  opacity: var(--on);
+  transform: translateY(calc((1 - var(--on)) * -46px));
+}</code></pre>
+
+  <p><strong><code>--k</code> は「今、何枚目まで出していいか」を表す進行カウンタ</strong>です。<code>--p</code> から 0.2 を引いているので、スクロールが 20% 進むまでは動きません（入ってすぐ始まると気付かれないため）。<code>× 16</code> は速度で、上げると一気に積み上がります。</p>
+  <p><strong><code>--on</code> が各コイン自身の「出現度」</strong>。<code>--k − --i</code> は「自分の番が来てから、どれだけ経ったか」です。<code>clamp(0, 値, 1)</code> は「0 未満なら 0、1 超なら 1、間ならそのまま」という関数。<strong>自分の番号と全体の進行度を比べるだけの式が、10 枚の時間差アニメーションになります。</strong></p>
+
+  <div class="demo" id="d3">
+    <div class="demo-head"><span>実験 03 — clamp スタッガー</span><span class="hint">--p を手で動かせます</span></div>
+    <div class="demo-stage">
+      <div class="coinwrap" id="d3stage" style="--p:.35">
+        <svg viewBox="0 0 300 330" role="img" aria-label="10枚のコインが --p の値に応じて1枚ずつ積み上がるデモ">
+          <defs>
+            <g id="coinshape">
+              <path d="M-60 0 v10 a60 16 0 0 0 120 0 v-10 z" fill="var(--coin-edge)"/>
+              <ellipse cx="0" cy="0" rx="60" ry="16" fill="var(--coin-face)"/>
+              <path d="M-60 0 v10 a60 16 0 0 0 120 0 v-10" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+              <ellipse cx="0" cy="0" rx="60" ry="16" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+            </g>
+          </defs>
+          <g transform="translate(150 290)"><g class="coin" style="--i:0"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 269)"><g class="coin" style="--i:1"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 248)"><g class="coin" style="--i:2"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 227)"><g class="coin" style="--i:3"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 206)"><g class="coin" style="--i:4"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 185)"><g class="coin" style="--i:5"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 164)"><g class="coin" style="--i:6"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 143)"><g class="coin" style="--i:7"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 122)"><g class="coin" style="--i:8"><use href="#coinshape"/></g></g>
+          <g transform="translate(150 101)"><g class="coin" style="--i:9"><use href="#coinshape"/></g></g>
+        </svg>
+        <div class="calc" id="d3calc"></div>
+      </div>
+    </div>
+    <div class="demo-ctrl">
+      <div class="ctrl"><label for="d3p">--p</label><input type="range" id="d3p" min="0" max="1" step="0.005" value="0.35"><output id="d3po">0.350</output></div>
+      <div class="ctrl"><label for="d3s">速度（× の値）</label><input type="range" id="d3s" min="4" max="30" step="1" value="16"><output id="d3so">16</output></div>
+    </div>
+  </div>
+  <span class="cap">右の表は各コインの --on（出現度）です。0 と 1 のあいだにいる 1 枚だけが、いま落ちてくる途中のコインです。</span>
+
+  <p>エスプレッソマシンの「60 万円が 6 年に分かれる」タイルも、同じ仕組みで番号と閾値を変えただけ。棒グラフも <code>scaleX</code> を進行度に紐付けています。</p>
+
+<pre><code class="language-css">html.motion .bar path{
+  transform: scaleX(clamp(.06, calc((var(--p) - .16) * 2.8), 1));
+  transform-box: fill-box;
+  transform-origin: left center;   /* 左端を固定して右へ伸ばす */
+}</code></pre>
+
+  <p class="note"><code>transform-origin</code> を指定しないと中心から両側に伸びてしまいます。SVG では <code>transform-box: fill-box</code> を添えて「図形自身の枠を基準にする」と宣言しておくのが確実です。</p>
+</section>
+
+<section id="s6">
+  <h2><span class="n">06</span>線を描くアニメーション</h2>
+  <p class="lead-in">イラストの輪郭が手で描かれるように現れる部分です。原理は<strong>破線</strong>です。</p>
+  <p><code>stroke-dasharray</code> は破線の「線の長さ」と「隙間の長さ」を指定します。ここで<strong>線の長さをパス全体の長さと同じにする</strong>と、パスが 1 本の線でぴったり埋まります。そこに <code>stroke-dashoffset</code>（破線のスタート位置をずらす量）を足すと、線が端から消えていく。<strong>L → 0 に変化させれば、描かれていくように見えます。</strong></p>
+
+  <div class="demo" id="d4">
+    <div class="demo-head"><span>実験 04 — stroke-dasharray</span><span class="hint">2つの値を動かしてみてください</span></div>
+    <div class="demo-stage">
+      <svg viewBox="0 0 460 150" id="d4svg" role="img" aria-label="破線のパラメータで線の見え方が変わるデモ">
+        <path id="d4path" d="M20 96 C 70 30, 130 130, 180 76 S 280 20, 330 84 C 360 120, 400 110, 440 62"
+              fill="none" stroke="var(--bengara)" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="demo-ctrl">
+      <div class="ctrl"><label for="d4a">dasharray</label><input type="range" id="d4a" min="2" max="600" step="1" value="600"><output id="d4ao">600</output></div>
+      <div class="ctrl"><label for="d4o">dashoffset</label><input type="range" id="d4o" min="0" max="600" step="1" value="0"><output id="d4oo">0</output></div>
+      <div class="btnrow">
+        <button id="d4play">描画を再生</button>
+        <button id="d4reset">L にそろえる</button>
+        <span class="readout" id="d4len">パスの長さ L = —</span>
+      </div>
+    </div>
+  </div>
+  <span class="cap">dasharray を小さくすると破線に、L と同じにすると一本の線になります。その状態で dashoffset を上げると、端から消えていきます。</span>
+
+  <p>パスの長さはブラウザに聞けます。<code>getTotalLength()</code> は、どんなに曲がりくねったパスでも実際の長さを px で返します。<code>&lt;circle&gt;</code> や <code>&lt;ellipse&gt;</code> でも使えます。</p>
+
+<pre><code class="language-javascript">var draws = document.querySelectorAll('.draw');
+for (var d = 0; d &lt; draws.length; d++) {
+  var len = Math.ceil(draws[d].getTotalLength()) + 4;
+  draws[d].style.setProperty('--L', len);
+}</code></pre>
+
+<pre><code class="language-css">.draw{ stroke-dasharray: var(--L, 1000); stroke-dashoffset: 0; }
+
+html.motion .draw{
+  stroke-dashoffset: var(--L, 1000);              /* 初期状態：消えている */
+  transition: stroke-dashoffset 1.25s cubic-bezier(.3,.75,.3,1);
+  transition-delay: calc(var(--i, 0) * 110ms);    /* 番号ぶん遅らせる */
+}
+html.motion .rv-in .draw{ stroke-dashoffset: 0; } /* 発火：描かれる */</code></pre>
+
+  <p><code>--i</code> で遅延をずらしているので、店の輪郭 → 屋根 → 日よけ → 窓 → 扉 と順に描かれます。1 本ずつ手で描いているように見えるのは、この 110ms のずれのおかげです。</p>
+  <p>湯気は逆に、<strong>わざと隙間だらけの破線を無限にずらし続けて</strong>います。</p>
+
+<pre><code class="language-css">.steam path{ stroke-dasharray: 5 9; animation: steamup 3.4s linear infinite; }
+@keyframes steamup{ to{ stroke-dashoffset: -28; } }</code></pre>
+</section>
+
+<section id="s7">
+  <h2><span class="n">07</span>一度だけ発火させる</h2>
+  <p class="lead-in">「描かれる」演出は、スクロールに張り付かせるのではなく<strong>一度だけ再生</strong>したいものです。これには <code>IntersectionObserver</code> を使います。</p>
+
+<pre><code class="language-javascript">var io = new IntersectionObserver(function(entries){
+  for (var i = 0; i &lt; entries.length; i++) {
+    if (entries[i].isIntersecting) {
+      entries[i].target.classList.add('rv-in');  // クラスを付けて発火
+      io.unobserve(entries[i].target);           // 二度と発火しないよう監視解除
+    }
+  }
+}, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });</code></pre>
+
+  <div class="demo" id="d5">
+    <div class="demo-head"><span>実験 05 — IntersectionObserver</span><span class="hint">枠の中をスクロール</span></div>
+    <div class="demo-stage" style="padding:0;background:none">
+      <div class="sbox" id="d5box">
+        <div class="spacer">↓ スクロール</div>
+        <div class="iocards" id="d5cards"></div>
+        <div class="spacer">↑ 戻る</div>
+      </div>
+    </div>
+    <div class="demo-ctrl">
+      <div class="ctrl"><label for="d5t">threshold</label><input type="range" id="d5t" min="0" max="1" step="0.05" value="0.1"><output id="d5to">0.10</output></div>
+      <div class="ctrl"><label for="d5m">rootMargin 下</label><input type="range" id="d5m" min="-40" max="0" step="5" value="-10"><output id="d5mo">-10%</output></div>
+      <div class="btnrow"><button id="d5reset">リセット</button><span class="readout" id="d5log">未発火 0 / 5</span></div>
+    </div>
+  </div>
+  <span class="cap">threshold を 1 にすると「全部見えるまで発火しない」、rootMargin を −40% にすると「かなり上まで来ないと発火しない」になります。</span>
+
+  <ul>
+    <li><code>threshold: 0.1</code> … 要素の 10% が見えたら発火</li>
+    <li><code>rootMargin: '0px 0px -10% 0px'</code> … 判定ラインを下端より 10% 内側へ。端ぎりぎりで発火して見逃す事故を防ぎます</li>
+    <li><code>unobserve</code> … 発火したら監視をやめる。付けっぱなしだと往復スクロールで何度も再生されて鬱陶しくなります</li>
+  </ul>
+  <p><strong>スクロール連動（<code>--p</code>）と、一度だけ（IntersectionObserver）を使い分ける</strong>のが今回の構成です。位置に張り付いてほしい動きは前者、登場演出は後者。</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">08</span>手描きと水彩の作り方</h2>
+  <p class="lead-in">イラストが手描きに見えるのは、絵が上手いからではなく<strong>フィルタで線を歪めている</strong>からです。パス自体はきれいな直線や円で書いてあります。</p>
+
+<pre><code class="language-xml">&lt;filter id="rough" x="-25%" y="-25%" width="150%" height="150%"&gt;
+  &lt;feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="11" result="n"/&gt;
+  &lt;feDisplacementMap in="SourceGraphic" in2="n" scale="3"
+                     xChannelSelector="R" yChannelSelector="G"/&gt;
+&lt;/filter&gt;</code></pre>
+
+  <p><strong><code>feTurbulence</code></strong> は雲のようなランダムなノイズ画像を作ります。<strong><code>feDisplacementMap</code></strong> が本体で、「ノイズの色の濃さを見て、元の絵のピクセルをその分ずらす」フィルタです。<code>xChannelSelector="R"</code> は「横方向のずらし量はノイズの赤成分から取る」という意味。</p>
+
+  <div class="demo" id="d6">
+    <div class="demo-head"><span>実験 06 — feTurbulence + feDisplacementMap</span><span class="hint">scale を上げると水彩になります</span></div>
+    <div class="demo-stage">
+      <svg viewBox="0 0 440 190" role="img" aria-label="SVGフィルタのパラメータを変えて、線の歪みと水彩の滲みを確かめるデモ">
+        <filter id="dmf" x="-45%" y="-45%" width="190%" height="190%">
+          <feTurbulence id="dmt" type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="11" result="n"/>
+          <feDisplacementMap id="dmd" in="SourceGraphic" in2="n" scale="3" xChannelSelector="R" yChannelSelector="G" result="d"/>
+          <feGaussianBlur id="dmb" in="d" stdDeviation="0"/>
+        </filter>
+        <g filter="url(#dmf)">
+          <circle cx="96" cy="92" r="52" fill="var(--koji)" opacity=".55"/>
+          <rect x="180" y="46" width="130" height="92" fill="none" stroke="var(--ink)" stroke-width="3"/>
+          <circle cx="376" cy="92" r="46" fill="none" stroke="var(--bengara)" stroke-width="3"/>
+          <path d="M28 172 H412" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+    <div class="demo-ctrl">
+      <div class="ctrl"><label for="d6s">scale</label><input type="range" id="d6s" min="0" max="42" step="1" value="3"><output id="d6so">3</output></div>
+      <div class="ctrl"><label for="d6f">baseFrequency</label><input type="range" id="d6f" min="4" max="90" step="1" value="24"><output id="d6fo">0.024</output></div>
+      <div class="ctrl"><label for="d6o">numOctaves</label><input type="range" id="d6o" min="1" max="5" step="1" value="3"><output id="d6oo">3</output></div>
+      <div class="ctrl"><label for="d6b">blur</label><input type="range" id="d6b" min="0" max="50" step="1" value="0"><output id="d6bo">0.0</output></div>
+      <div class="ctrl"><label for="d6d">seed</label><input type="range" id="d6d" min="1" max="40" step="1" value="11"><output id="d6do">11</output></div>
+      <div class="btnrow"><button id="d6a">手描きの設定（本編の #rough）</button><button id="d6c">水彩の設定（本編の #wash）</button></div>
+    </div>
+  </div>
+
+  <p><code>scale</code> ひとつで質感が決まります。<strong>3 なら手描きの線、30 なら水彩の滲み</strong>。ボタンで本編の 2 つの設定を切り替えられるので、見比べてみてください。<code>seed</code> は乱数の種で、変えると別のパターンになり、<strong>同じ値なら毎回同じ模様</strong>が出ます。</p>
+
+<pre><code class="language-xml">&lt;filter id="wash" x="-35%" y="-35%" width="170%" height="170%"&gt;
+  &lt;feTurbulence ... baseFrequency="0.014" numOctaves="4" seed="5" result="n"/&gt;
+  &lt;feDisplacementMap in="SourceGraphic" in2="n" scale="30" ... result="d"/&gt;
+  &lt;feGaussianBlur in="d" stdDeviation="2.6"/&gt;
+&lt;/filter&gt;</code></pre>
+
+  <p><code>result="n"</code> と <code>in2="n"</code> で前の工程の出力を次に渡しています。フィルタは<strong>パイプラインとして数珠つなぎにできる</strong>わけです。だから本編の背景の色ムラは、ただの <code>&lt;circle&gt;</code> にこのフィルタを掛けて、乗算で重ねただけです。</p>
+
+<pre><code class="language-css">.wash{ mix-blend-mode: var(--wash-blend); opacity: var(--wash-op); filter: url(#wash); }</code></pre>
+
+  <p class="note warn"><b>よくある落とし穴。</b><code>x="-25%" width="150%"</code> はフィルタの適用範囲です。デフォルトのままだと歪ませた部分が枠からはみ出して<strong>切れます</strong>。手描きフィルタを作って端が途切れるのは、ほぼこれが原因です。上のデモで scale を 40 まで上げても切れないのは、範囲を 190% に広げてあるからです。</p>
+</section>
+
+<section id="s9">
+  <h2><span class="n">09</span>立体に見せる</h2>
+  <p class="lead-in">3D は CSS だけで出せます。</p>
+
+<pre><code class="language-css">.tilt &gt; svg{
+  transform: perspective(1300px)
+             rotateX(calc(var(--c) * -4.5deg))
+             rotateY(calc(var(--c) * 3.2deg))
+             translate3d(0, calc(var(--c) * -26px), 0);
+}</code></pre>
+
+  <p><code>perspective()</code> は「カメラと画面の距離」です。<strong>小さいほど広角レンズになり、パースが強くつきます。</strong>1300px はかなり控えめで、傾きが上品に出る範囲。</p>
+
+  <div class="demo" id="d7">
+    <div class="demo-head"><span>実験 07 — perspective と rotate</span></div>
+    <div class="demo-stage" style="display:flex;justify-content:center;padding:2.4rem 1rem">
+      <div class="card3d" id="d7card">
+        <div class="c3-lb">まる珈琲</div>
+        <div class="c3-row"><span>EV</span><b>450 万</b></div>
+        <div class="c3-row"><span>EBITDA</span><b>60 万</b></div>
+        <div class="c3-row tot"><span>EV / EBITDA</span><b>7.5 倍</b></div>
+      </div>
+    </div>
+    <div class="demo-ctrl">
+      <div class="ctrl"><label for="d7p">perspective</label><input type="range" id="d7p" min="200" max="3000" step="50" value="1300"><output id="d7po">1300px</output></div>
+      <div class="ctrl"><label for="d7x">rotateX</label><input type="range" id="d7x" min="-30" max="30" step="1" value="-8"><output id="d7xo">-8deg</output></div>
+      <div class="ctrl"><label for="d7y">rotateY</label><input type="range" id="d7y" min="-30" max="30" step="1" value="6"><output id="d7yo">6deg</output></div>
+      <div class="ctrl"><label for="d7z">translateZ</label><input type="range" id="d7z" min="-60" max="120" step="4" value="0"><output id="d7zo">0px</output></div>
+    </div>
+  </div>
+
+  <p>回転量に <code>--c</code>（画面中心からのズレ）を掛けているのがポイントです。</p>
+  <ul>
+    <li>画面下にあるとき（<code>--c</code> は正）→ 手前に傾いている</li>
+    <li>画面中央（<code>--c</code> = 0）→ <strong>回転ゼロ＝正面を向く</strong></li>
+    <li>通り過ぎたあと（<code>--c</code> は負）→ 逆に傾く</li>
+  </ul>
+  <p>つまり<strong>読んでほしい位置に来たときだけ正面を向く</strong>。傾きが情報の邪魔をしません。</p>
+</section>
+
+<section id="s10">
+  <h2><span class="n">10</span>壊れない設計</h2>
+  <p class="lead-in">派手に動かすページほど、<strong>動かないときに壊れないこと</strong>が大事です。3 つ用意しました。</p>
+
+  <h3>1. JavaScript が動かなくても読める</h3>
+  <p>アニメーションの初期状態（透明、線が消えている）は、すべて <code>html.motion</code> の下にだけ書いてあります。このクラスは JavaScript が付けます。</p>
+
+<pre><code class="language-css">.rv{ transition: opacity .85s cubic-bezier(.22,.7,.28,1); }   /* 常に適用 */
+html.motion .rv{ opacity: 0; transform: translateY(26px); }   /* JSが動いた時だけ */
+html.motion .rv.rv-in{ opacity: 1; transform: none; }</code></pre>
+
+  <p><strong>JS が落ちれば <code>.motion</code> が付かない → 初期状態も適用されない → 全部そのまま見える。</strong>逆の書き方（デフォルトで <code>opacity:0</code>）にすると、JS が失敗した瞬間に真っ白なページになります。順序が命です。</p>
+
+  <h3>2. 動きを求めていない人には動かさない</h3>
+
+<pre><code class="language-javascript">var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+if (!mq.matches) document.documentElement.classList.add('motion');</code></pre>
+
+  <p>OS の「視差効果を減らす」設定を読んでいます。前庭障害などで動く画面が体調に響く人がいるので、大きく動かすページでは必須の配慮です。CSS 側にも保険を入れてあります。</p>
+
+  <h3>3. Observer が発火しなかった場合の保険</h3>
+
+<pre><code class="language-javascript">setTimeout(showAll, 5000);</code></pre>
+
+  <p>5 秒経っても発火していない要素は、問答無用で全部表示します。稀な環境で「スクロールしても何も出てこない」状態に陥るのを防ぎます。</p>
+</section>
+
+<section id="end">
+  <h2><span class="n">--</span>まとめ</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th>#</th><th>技術</th><th>役割</th></tr></thead>
+      <tbody>
+        <tr><td>01</td><td>getBoundingClientRect()</td><td>スクロール位置を 0〜1 の数字に</td></tr>
+        <tr><td>02</td><td>CSS変数 + 継承</td><td>JS から CSS へ数字を 1 回だけ渡す</td></tr>
+        <tr><td>03</td><td>requestAnimationFrame + passive</td><td>イベントを間引いて滑らかに</td></tr>
+        <tr><td>04</td><td>transform / opacity のみ</td><td>再レイアウトを避ける</td></tr>
+        <tr><td>05</td><td>calc() + clamp() + 通し番号</td><td>JSなしで時間差アニメーション</td></tr>
+        <tr><td>06</td><td>stroke-dasharray / getTotalLength()</td><td>線が描かれる演出</td></tr>
+        <tr><td>07</td><td>IntersectionObserver</td><td>登場時に一度だけ発火</td></tr>
+        <tr><td>08</td><td>feTurbulence + feDisplacementMap</td><td>手描き・水彩の質感</td></tr>
+        <tr><td>09</td><td>perspective() + rotateX/Y</td><td>立体感</td></tr>
+        <tr><td>10</td><td>prefers-reduced-motion</td><td>壊れない・排除しない</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>どこから手をつけるか</h3>
+  <p>この中から 2 つ選ぶなら、<strong>02 と 04</strong> です。「JS は数字だけ書く」「動かすのは transform と opacity だけ」。この 2 つを守るだけで、スクロールアニメーションは驚くほど書きやすく、軽くなります。05 の <code>clamp</code> パターンはその応用で、慣れるとスタッガーを CSS だけで自在に組めるようになります。</p>
+  <p>本編のソースは 1 ファイルにまとまっているので、<a href="https://github.com/Takuya-ops/maru-coffee-valuation/blob/main/index.html">index.html</a> をそのまま読めます。ここで説明した箇所は、コメントを追わなくても <code>--p</code> で検索すれば全部見つかります。</p>
+</section>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <p><a href="../">← まる珈琲の値段（本編）へ戻る</a></p>
+  <p class="small">このページのデモはすべてこのファイル内で完結しています。ソース: <a href="https://github.com/Takuya-ops/maru-coffee-valuation">github.com/Takuya-ops/maru-coffee-valuation</a></p>
+</footer>
+</div>
+
+<style>
+/* ---- demo parts ---- */
+.demo-stage > svg{display:block;width:100%;height:auto}
+.lane{margin:.35rem 0;padding:.55rem .6rem;background:var(--card);border:1px solid var(--rule);border-radius:3px}
+.lane-lb{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.72rem;color:var(--ink-3)}
+.dots{position:relative;height:30px;margin-top:.35rem;overflow:hidden}
+.dot{position:absolute;top:9px;left:0;width:11px;height:11px;border-radius:50%;background:var(--bengara);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.dot.b{background:var(--matcha)}
+
+.coinwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:1rem;align-items:center}
+@media (min-width:560px){.coinwrap{grid-template-columns:minmax(0,1fr) 9.5rem}}
+#d3 .coin{
+  --k:calc((var(--p) - .2) * var(--sp, 16));
+  --on:clamp(0, calc(var(--k) - var(--i)), 1);
+  opacity:var(--on);
+  transform:translateY(calc((1 - var(--on)) * -46px));
+}
+.calc{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.72rem;color:var(--ink-2);display:grid;gap:1px}
+.calc div{display:flex;justify-content:space-between;gap:.5rem;padding:.12rem .4rem;border-radius:2px}
+.calc div.hd{color:var(--bengara);border-bottom:1px solid var(--rule);margin-bottom:.15rem}
+.calc div.on{background:color-mix(in srgb, var(--matcha) 24%, transparent);color:var(--ink)}
+.calc div.mid{background:color-mix(in srgb, var(--koji) 40%, transparent);color:var(--ink)}
+
+.iocards{display:grid;gap:.6rem;padding:0 1rem}
+.iocard{
+  padding:.7rem .9rem;border:1px solid var(--rule-2);border-radius:3px;background:var(--card);
+  font-size:.85rem;color:var(--ink-3);opacity:.32;transform:translateY(14px);
+  transition:opacity .5s ease, transform .5s ease, border-color .5s ease, color .5s ease;
+}
+.iocard.fired{opacity:1;transform:none;border-color:var(--matcha);color:var(--ink)}
+.iocard b{font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--matcha)}
+
+.card3d{
+  width:min(290px,100%);background:var(--card);border:1px solid var(--rule-2);border-radius:4px;
+  padding:1rem 1.15rem;box-shadow:var(--sh-2);transform-style:preserve-3d;
+}
+.c3-lb{font-family:"Shippori Mincho B1",serif;font-weight:700;font-size:1.1rem;margin-bottom:.5rem}
+.c3-row{display:flex;justify-content:space-between;gap:1rem;font-size:.86rem;color:var(--ink-2);padding:.18rem 0}
+.c3-row b{font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--ink);font-weight:500}
+.c3-row.tot{border-top:1.5px solid var(--ink);margin-top:.35rem;padding-top:.4rem}
+.c3-row.tot b{color:var(--bengara)}
+
+.foot{border-top:1px solid var(--rule);padding:1.8rem 0 4rem;font-size:.9rem;color:var(--ink-3)}
+.foot .small{font-size:.82rem;margin-top:.45rem}
+
+@media (prefers-reduced-motion: reduce){
+  .iocard{opacity:1;transform:none}
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+  var clamp = function(v, lo, hi){ return v < lo ? lo : (v > hi ? hi : v); };
+  function throttle(fn){
+    var q = false;
+    return function(){ if (!q) { q = true; requestAnimationFrame(function(){ q = false; fn(); }); } };
+  }
+
+  if (window.hljs) { try { hljs.highlightAll(); } catch (e) {} }
+
+  /* ---------- 実験01: 進行度 ---------- */
+  (function(){
+    var box = $('d1box'), t = $('d1t');
+    if (!box || !t) return;
+    var op = $('d1p'), oc = $('d1c'), bp = $('d1pb'), bc = $('d1cb'), ro = $('d1r');
+    function upd(){
+      var br = box.getBoundingClientRect(), tr = t.getBoundingClientRect();
+      var vh = br.height, top = tr.top - br.top;
+      var p = clamp((vh - top) / (vh + tr.height), 0, 1);
+      var c = clamp(((top + tr.height / 2) - vh / 2) / vh, -1.3, 1.3);
+      op.textContent = p.toFixed(3);
+      oc.textContent = (c >= 0 ? '+' : '') + c.toFixed(3);
+      bp.parentNode.style.setProperty('--v', p.toFixed(3));
+      bc.parentNode.style.setProperty('--v', ((c + 1.3) / 2.6).toFixed(3));
+      ro.textContent = 'r.top(枠内) = ' + Math.round(top) + 'px / 枠の高さ = ' + Math.round(vh) + 'px / 要素の高さ = ' + Math.round(tr.height) + 'px';
+    }
+    var t1 = throttle(upd);
+    box.addEventListener('scroll', t1, { passive: true });
+    window.addEventListener('resize', t1);
+    upd();
+  })();
+
+  /* ---------- 実験02: left と transform ---------- */
+  (function(){
+    var la = $('d2a'), lb = $('d2b'), nIn = $('d2n'), nOut = $('d2no'), fps = $('d2fps');
+    if (!la || !lb) return;
+    var mode = null, raf = null, frames = 0, last = 0;
+
+    function build(n){
+      var a = '', b = '';
+      for (var i = 0; i < n; i++) { a += '<span class="dot"></span>'; b += '<span class="dot b"></span>'; }
+      la.innerHTML = a; lb.innerHTML = b;
+      place();
+    }
+    function place(){
+      var w = Math.max(40, la.clientWidth - 12);
+      var da = la.children, db = lb.children;
+      for (var i = 0; i < da.length; i++) {
+        var x = (i / da.length) * w;
+        da[i].style.left = x + 'px';
+        db[i].style.transform = 'translateX(' + x + 'px)';
+      }
+    }
+    function tick(now){
+      var w = Math.max(40, la.clientWidth - 12);
+      var el = (mode === 'left') ? la.children : lb.children;
+      var n = el.length, ph = now / 600;
+      for (var i = 0; i < n; i++) {
+        var x = (0.5 + 0.5 * Math.sin(ph + i * 0.12)) * w;
+        if (mode === 'left') el[i].style.left = x + 'px';
+        else el[i].style.transform = 'translateX(' + x + 'px)';
+      }
+      frames++;
+      if (now - last > 500) {
+        fps.textContent = Math.round(frames * 1000 / (now - last)) + ' fps — ' + mode + ' で再生中';
+        frames = 0; last = now;
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    function start(m){
+      stop(); mode = m; frames = 0; last = performance.now();
+      raf = requestAnimationFrame(tick);
+    }
+    function stop(){
+      if (raf) cancelAnimationFrame(raf);
+      raf = null; mode = null; fps.textContent = '停止中';
+    }
+    nIn.addEventListener('input', function(){ nOut.textContent = nIn.value; build(+nIn.value); });
+    $('d2left').addEventListener('click', function(){ start('left'); });
+    $('d2tr').addEventListener('click', function(){ start('transform'); });
+    $('d2stop').addEventListener('click', stop);
+    window.addEventListener('resize', throttle(function(){ if (!mode) place(); }));
+    build(+nIn.value);
+  })();
+
+  /* ---------- 実験03: clamp スタッガー ---------- */
+  (function(){
+    var stage = $('d3stage'), pIn = $('d3p'), sIn = $('d3s'), pOut = $('d3po'), sOut = $('d3so'), calc = $('d3calc');
+    if (!stage) return;
+    function upd(){
+      var p = +pIn.value, sp = +sIn.value;
+      stage.style.setProperty('--p', p);
+      stage.style.setProperty('--sp', sp);
+      pOut.textContent = p.toFixed(3);
+      sOut.textContent = sp;
+      var k = (p - 0.2) * sp;
+      var html = '<div class="hd"><span>--k</span><span>' + k.toFixed(2) + '</span></div>';
+      for (var i = 9; i >= 0; i--) {
+        var on = clamp(k - i, 0, 1);
+        var cls = on >= 1 ? 'on' : (on > 0 ? 'mid' : '');
+        html += '<div class="' + cls + '"><span>i=' + i + '</span><span>' + on.toFixed(2) + '</span></div>';
+      }
+      calc.innerHTML = html;
+    }
+    pIn.addEventListener('input', upd);
+    sIn.addEventListener('input', upd);
+    upd();
+  })();
+
+  /* ---------- 実験04: stroke-dasharray ---------- */
+  (function(){
+    var path = $('d4path'), aIn = $('d4a'), oIn = $('d4o'), aOut = $('d4ao'), oOut = $('d4oo'), lenOut = $('d4len');
+    if (!path) return;
+    var L = Math.ceil(path.getTotalLength());
+    aIn.max = L; oIn.max = L; aIn.value = L; oIn.value = 0;
+    lenOut.textContent = 'パスの長さ L = ' + L;
+    function upd(){
+      path.style.transition = '';
+      path.style.strokeDasharray = aIn.value;
+      path.style.strokeDashoffset = oIn.value;
+      aOut.textContent = aIn.value; oOut.textContent = oIn.value;
+    }
+    aIn.addEventListener('input', upd);
+    oIn.addEventListener('input', upd);
+    $('d4reset').addEventListener('click', function(){ aIn.value = L; oIn.value = 0; upd(); });
+    $('d4play').addEventListener('click', function(){
+      aIn.value = L; oIn.value = L; upd();
+      void path.getBoundingClientRect();
+      path.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.3,.75,.3,1)';
+      path.style.strokeDashoffset = 0;
+      oIn.value = 0; oOut.textContent = '0';
+    });
+    upd();
+  })();
+
+  /* ---------- 実験05: IntersectionObserver ---------- */
+  (function(){
+    var box = $('d5box'), wrap = $('d5cards'), tIn = $('d5t'), mIn = $('d5m');
+    var tOut = $('d5to'), mOut = $('d5mo'), log = $('d5log');
+    if (!box || !wrap || !('IntersectionObserver' in window)) { if (log) log.textContent = 'この環境では IntersectionObserver が使えません'; return; }
+    var io = null, fired = 0, N = 5;
+    var html = '';
+    for (var i = 1; i <= N; i++) html += '<div class="iocard"><b>#' + i + '</b> — 未発火</div>';
+    wrap.innerHTML = html;
+
+    function rebuild(){
+      if (io) io.disconnect();
+      fired = 0;
+      var cards = wrap.children;
+      for (var i = 0; i < cards.length; i++) {
+        cards[i].classList.remove('fired');
+        cards[i].innerHTML = '<b>#' + (i + 1) + '</b> — 未発火';
+      }
+      io = new IntersectionObserver(function(entries){
+        for (var j = 0; j < entries.length; j++) {
+          if (entries[j].isIntersecting) {
+            var el = entries[j].target;
+            if (!el.classList.contains('fired')) {
+              el.classList.add('fired');
+              el.innerHTML = '<b>#' + (el.dataset.n) + '</b> — 発火 → unobserve';
+              fired++;
+              log.textContent = '発火 ' + fired + ' / ' + N;
+            }
+            io.unobserve(el);
+          }
+        }
+      }, { root: box, threshold: +tIn.value, rootMargin: '0px 0px ' + mIn.value + '% 0px' });
+      for (var k = 0; k < cards.length; k++) { cards[k].dataset.n = k + 1; io.observe(cards[k]); }
+      log.textContent = '発火 0 / ' + N;
+    }
+    tIn.addEventListener('input', function(){ tOut.textContent = (+tIn.value).toFixed(2); rebuild(); });
+    mIn.addEventListener('input', function(){ mOut.textContent = mIn.value + '%'; rebuild(); });
+    $('d5reset').addEventListener('click', rebuild);
+    rebuild();
+  })();
+
+  /* ---------- 実験06: SVGフィルタ ---------- */
+  (function(){
+    var turb = $('dmt'), disp = $('dmd'), blur = $('dmb');
+    if (!turb) return;
+    var sIn = $('d6s'), fIn = $('d6f'), oIn = $('d6o'), bIn = $('d6b'), dIn = $('d6d');
+    function upd(){
+      var bf = (+fIn.value / 1000);
+      turb.setAttribute('baseFrequency', bf);
+      turb.setAttribute('numOctaves', oIn.value);
+      turb.setAttribute('seed', dIn.value);
+      disp.setAttribute('scale', sIn.value);
+      blur.setAttribute('stdDeviation', (+bIn.value / 10));
+      $('d6so').textContent = sIn.value;
+      $('d6fo').textContent = bf.toFixed(3);
+      $('d6oo').textContent = oIn.value;
+      $('d6bo').textContent = (+bIn.value / 10).toFixed(1);
+      $('d6do').textContent = dIn.value;
+    }
+    [sIn, fIn, oIn, bIn, dIn].forEach(function(el){ el.addEventListener('input', upd); });
+    $('d6a').addEventListener('click', function(){
+      sIn.value = 3; fIn.value = 24; oIn.value = 3; bIn.value = 0; dIn.value = 11; upd();
+    });
+    $('d6c').addEventListener('click', function(){
+      sIn.value = 30; fIn.value = 14; oIn.value = 4; bIn.value = 26; dIn.value = 5; upd();
+    });
+    upd();
+  })();
+
+  /* ---------- 実験07: perspective ---------- */
+  (function(){
+    var card = $('d7card');
+    if (!card) return;
+    var p = $('d7p'), x = $('d7x'), y = $('d7y'), z = $('d7z');
+    function upd(){
+      card.style.transform = 'perspective(' + p.value + 'px) rotateX(' + x.value + 'deg) rotateY(' + y.value + 'deg) translateZ(' + z.value + 'px)';
+      $('d7po').textContent = p.value + 'px';
+      $('d7xo').textContent = x.value + 'deg';
+      $('d7yo').textContent = y.value + 'deg';
+      $('d7zo').textContent = z.value + 'px';
+    }
+    [p, x, y, z].forEach(function(el){ el.addEventListener('input', upd); });
+    upd();
+  })();
+
+  /* ---------- 目次の現在地 ---------- */
+  (function(){
+    var links = [].slice.call(document.querySelectorAll('.toc a'));
+    if (!links.length || !('IntersectionObserver' in window)) return;
+    var map = {};
+    links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          links.forEach(function(a){ a.classList.remove('on'); });
+          if (map[e.target.id]) map[e.target.id].classList.add('on');
+        }
+      });
+    }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+    document.querySelectorAll('section[id]').forEach(function(s){ io.observe(s); });
+  })();
+})();
+</script>
+</body>
+</html>

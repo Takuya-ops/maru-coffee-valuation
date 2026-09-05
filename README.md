@@ -4,6 +4,9 @@ PER・EBITDA・EV/EBITDA を、町の喫茶店を一軒買う話として最初�
 
 **公開ページ → https://takuya-ops.github.io/maru-coffee-valuation/**
 
+**実装ノート（デモ付き）→ https://takuya-ops.github.io/maru-coffee-valuation/docs/**
+スクロール連動アニメーションの作り方を、スライダーで動かせる7つの実験台つきで解説しています。
+
 ## 内容
 
 架空の喫茶店「まる珈琲」を題材に、株式のバリュエーション指標を順を追って説明します。
