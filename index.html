@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="PER・EBITDA・EV/EBITDA を、町の喫茶店を一軒買う話として最初から説明するスクロール解説。水彩・手描き風のSVGイラストがスクロールに連動して動きます。">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="まる珈琲の値段">
+<meta property="og:description" content="PER・EBITDA・EV/EBITDA を、町の喫茶店を一軒買う話として最初から説明するスクロール解説。水彩・手描き風のSVGイラストがスクロールに連動して動きます。">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#9749;</text></svg>">
+<style>
+:root{color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>まる珈琲の値段</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Klee+One:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ============ tokens ============ */
+:root{
+  --paper:#EEEDE3;
+  --paper-deep:#E4E3D6;
+  --card:#F8F7EF;
+  --card-2:#F2F1E6;
+  --ink:#1D262C;
+  --ink-2:#4A555E;
+  --ink-3:#7C868F;
+  --rule:rgba(29,38,44,.16);
+  --rule-2:rgba(29,38,44,.30);
+  --ai:#27507F;
+  --ai-2:#5C86B6;
+  --ai-wash:#4E79AE;
+  --bengara:#9E4B3A;
+  --matcha:#6B8A55;
+  --koji:#C4922C;
+  --wash-blend:multiply;
+  --wash-op:.34;
+  --grain-op:.055;
+  --grain-blend:multiply;
+  --sh-1:0 1px 2px rgba(29,38,44,.07), 0 8px 20px -12px rgba(29,38,44,.30);
+  --sh-2:0 2px 4px rgba(29,38,44,.09), 0 24px 50px -22px rgba(29,38,44,.42);
+  --coin-face:#D8AE4A;
+  --coin-edge:#A87C22;
+  --ghost:rgba(124,134,143,.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131920;
+    --paper-deep:#0E1319;
+    --card:#1B232B;
+    --card-2:#202932;
+    --ink:#EBE7DB;
+    --ink-2:#AFB7BD;
+    --ink-3:#7E888F;
+    --rule:rgba(235,231,219,.15);
+    --rule-2:rgba(235,231,219,.30);
+    --ai:#8DB4E2;
+    --ai-2:#5C86B6;
+    --ai-wash:#5B8CC4;
+    --bengara:#D9856F;
+    --matcha:#9DBE85;
+    --koji:#DFB65C;
+    --wash-blend:screen;
+    --wash-op:.26;
+    --grain-op:.07;
+    --grain-blend:overlay;
+    --sh-1:0 1px 2px rgba(0,0,0,.34), 0 8px 22px -12px rgba(0,0,0,.6);
+    --sh-2:0 2px 6px rgba(0,0,0,.4), 0 26px 54px -22px rgba(0,0,0,.75);
+    --coin-face:#D9B45C;
+    --coin-edge:#96712A;
+    --ghost:rgba(175,183,189,.26);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131920;
+  --paper-deep:#0E1319;
+  --card:#1B232B;
+  --card-2:#202932;
+  --ink:#EBE7DB;
+  --ink-2:#AFB7BD;
+  --ink-3:#7E888F;
+  --rule:rgba(235,231,219,.15);
+  --rule-2:rgba(235,231,219,.30);
+  --ai:#8DB4E2;
+  --ai-2:#5C86B6;
+  --ai-wash:#5B8CC4;
+  --bengara:#D9856F;
+  --matcha:#9DBE85;
+  --koji:#DFB65C;
+  --wash-blend:screen;
+  --wash-op:.26;
+  --grain-op:.07;
+  --grain-blend:overlay;
+  --sh-1:0 1px 2px rgba(0,0,0,.34), 0 8px 22px -12px rgba(0,0,0,.6);
+  --sh-2:0 2px 6px rgba(0,0,0,.4), 0 26px 54px -22px rgba(0,0,0,.75);
+  --coin-face:#D9B45C;
+  --coin-edge:#96712A;
+  --ghost:rgba(175,183,189,.26);
+}
+
+/* ============ base ============ */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  font-size:17px;
+  line-height:1.95;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3{font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.45}
+p{margin:0}
+a{color:var(--ai)}
+:focus-visible{outline:2.5px solid var(--ai);outline-offset:3px;border-radius:2px}
+
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+
+/* paper grain + vignette */
+.grain{
+  position:fixed;inset:-10%;pointer-events:none;z-index:60;
+  opacity:var(--grain-op);mix-blend-mode:var(--grain-blend);
+}
+.grain rect{fill:#fff}
+
+/* ============ layout ============ */
+.wrap{position:relative;max-width:1220px;margin:0 auto;padding:0 clamp(1.1rem,4vw,3.5rem)}
+.ledger{
+  position:fixed;left:max(1.1rem,calc(50vw - 610px + 1.4rem));top:0;bottom:0;width:34px;
+  z-index:5;pointer-events:none;display:none;
+}
+@media (min-width:1080px){.ledger{display:block}}
+.ledger .rail{position:absolute;left:16px;top:0;bottom:0;width:1px;background:var(--rule)}
+.ledger .fill{position:absolute;left:15px;top:0;width:3px;background:var(--bengara);height:calc(var(--scroll,0) * 100%);border-radius:2px;opacity:.8}
+.ledger .bead{
+  position:absolute;left:8px;top:calc(var(--scroll,0) * 100%);width:17px;height:17px;margin-top:-8px;
+  border-radius:50%;background:var(--paper);border:2px solid var(--bengara);
+}
+
+/* ============ hero ============ */
+.hero{position:relative;padding:clamp(3rem,7vh,5.5rem) 0 clamp(2rem,5vh,4rem)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:center}
+@media (min-width:920px){.hero-grid{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)}}
+.brandline{
+  display:flex;align-items:center;gap:.7rem;font-family:"Klee One",cursive;
+  font-size:.95rem;color:var(--bengara);letter-spacing:.06em;
+}
+.brandline .dash{flex:0 0 42px;height:1px;background:var(--bengara);opacity:.6}
+h1{
+  font-size:clamp(2.5rem,5.6vw,4.4rem);font-weight:800;letter-spacing:.01em;line-height:1.2;
+  margin:.6rem 0 0;
+}
+h1 .sub{display:block;font-size:.38em;font-weight:500;color:var(--ink-2);letter-spacing:.05em;margin-top:.9rem;line-height:1.7}
+.hero-lede{margin-top:1.5rem;max-width:31rem;color:var(--ink-2);font-size:1.03rem}
+.hero-lede strong{color:var(--ink);font-weight:700}
+.underdraw{display:block;width:min(340px,80%);height:14px;margin-top:1.1rem;overflow:visible}
+.underdraw path{fill:none;stroke:var(--koji);stroke-width:5;stroke-linecap:round}
+.scrollcue{
+  margin-top:2.4rem;display:inline-flex;align-items:center;gap:.6rem;
+  font-family:"Klee One",cursive;font-size:.9rem;color:var(--ink-3);
+}
+.scrollcue .arw{display:block;width:14px;height:26px;animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+
+/* ============ spreads ============ */
+.spread{
+  position:relative;
+  display:grid;grid-template-columns:minmax(0,1fr);
+  gap:clamp(1.8rem,4vw,4.2rem);align-items:center;
+  padding:clamp(3.4rem,9vh,7.2rem) 0;
+  --p:.5;--c:0;
+}
+@media (min-width:920px){
+  .spread{grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr)}
+  .spread.rev .col-text{order:2}
+  .spread.rev .col-stage{order:1}
+}
+.col-text{max-width:34rem}
+.eyebrow{
+  display:flex;align-items:baseline;gap:.85rem;
+  font-family:"Klee One",cursive;font-size:.95rem;letter-spacing:.14em;color:var(--bengara);
+  margin-bottom:.7rem;
+}
+.eyebrow .num{
+  font-family:"Shippori Mincho B1",serif;font-size:1.5rem;font-weight:800;color:var(--ai);
+  letter-spacing:0;line-height:1;
+}
+.eyebrow .num::after{content:"";display:inline-block;width:26px;height:1px;background:var(--rule-2);vertical-align:middle;margin-left:.85rem}
+h2{font-size:clamp(1.75rem,3.6vw,2.65rem);letter-spacing:.01em}
+.col-text p+p{margin-top:1.15rem}
+.col-text > p:first-of-type{margin-top:1.2rem}
+.col-text p{color:var(--ink-2)}
+.col-text p strong{color:var(--ink);font-weight:700;background:linear-gradient(transparent 62%, color-mix(in srgb, var(--koji) 42%, transparent) 62%)}
+.note{
+  font-family:"Klee One",cursive;font-size:.94rem;color:var(--ink-3);
+  border-left:2px solid var(--rule-2);padding-left:1rem;margin-top:1.4rem;line-height:1.8;
+}
+
+/* stage */
+.col-stage{will-change:transform}
+.art{position:relative;width:100%}
+.art svg{display:block;width:100%;height:auto;overflow:visible}
+.tilt > svg{transform:perspective(1300px) rotateX(calc(var(--c) * -4.5deg)) rotateY(calc(var(--c) * 3.2deg)) translate3d(0,calc(var(--c) * -26px),0)}
+.wash{mix-blend-mode:var(--wash-blend);opacity:var(--wash-op);filter:url(#wash)}
+.rgh{filter:url(#rough)}
+.ink{fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.ink-t{stroke-width:2.1}
+.ink-b{stroke-width:4.6}
+.hand{font-family:"Klee One",cursive;fill:var(--ink-2)}
+.hand-s{font-family:"Klee One",cursive;fill:var(--ink-3);font-size:15px}
+.fig{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ============ figures / cards ============ */
+.ledgercard{
+  background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  box-shadow:var(--sh-2);padding:clamp(1.2rem,3vw,1.8rem);
+  background-image:repeating-linear-gradient(var(--card) 0 30px, var(--rule) 30px 31px);
+  background-position:0 12px;
+}
+.ledgercard h3{
+  font-size:1.05rem;letter-spacing:.08em;color:var(--bengara);margin-bottom:.4rem;
+  font-family:"Klee One",cursive;font-weight:600;
+}
+.rows{list-style:none;margin:0;padding:0}
+.rows li{
+  display:flex;justify-content:space-between;align-items:baseline;gap:.6rem 1rem;flex-wrap:wrap;
+  min-height:31px;
+}
+.rows li span:first-child{font-size:.95rem;color:var(--ink-2);flex:1 1 auto;min-width:0}
+.rows li b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:1.02rem;color:var(--ink);white-space:nowrap}
+.rows li.total{border-top:2px solid var(--ink);margin-top:.4rem;padding-top:.35rem;min-height:38px}
+.rows li.total b{font-size:1.22rem;font-weight:500;color:var(--ai)}
+
+.formula{
+  margin-top:1.6rem;padding:1.05rem 1.2rem;border:1.5px solid var(--rule-2);border-radius:2px;
+  background:color-mix(in srgb, var(--card) 70%, transparent);
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  font-size:clamp(.92rem,2.2vw,1.06rem);line-height:1.85;color:var(--ink-2);
+  overflow-x:auto;
+}
+.formula b{color:var(--ai);font-weight:500}
+.formula .res{color:var(--bengara);font-weight:500}
+.formula .lbl{display:block;font-family:"Klee One",cursive;font-size:.82rem;color:var(--ink-3);letter-spacing:.1em;margin-bottom:.35rem}
+
+/* ============ shared section chrome ============ */
+.band{padding:clamp(3.4rem,8vh,6.4rem) 0}
+.band-head{max-width:38rem;margin-bottom:clamp(1.8rem,4vw,3rem)}
+.band-head h2{margin-bottom:.9rem}
+.band-head p{color:var(--ink-2)}
+
+/* reveal */
+.rv{transition:opacity .85s cubic-bezier(.22,.7,.28,1), transform .85s cubic-bezier(.22,.7,.28,1);transition-delay:calc(var(--i,0) * 90ms)}
+html.motion .rv{opacity:0;transform:translateY(26px)}
+html.motion .rv.rv-in{opacity:1;transform:none}
+.draw{stroke-dasharray:var(--L,1000);stroke-dashoffset:0}
+html.motion .draw{stroke-dashoffset:var(--L,1000);transition:stroke-dashoffset 1.25s cubic-bezier(.3,.75,.3,1);transition-delay:calc(var(--i,0) * 110ms)}
+html.motion .rv-in .draw, html.motion .draw.rv-in{stroke-dashoffset:0}
+
+@media (prefers-reduced-motion: reduce){
+  html.motion .rv{opacity:1;transform:none}
+  html.motion .draw{stroke-dashoffset:0}
+  .tilt > svg{transform:none}
+  .scrollcue .arw{animation:none}
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<svg class="defs" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="wash" x="-35%" y="-35%" width="170%" height="170%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.014" numOctaves="4" seed="5" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="30" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation="2.6"/>
+    </filter>
+    <filter id="wash2" x="-35%" y="-35%" width="170%" height="170%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="4" seed="19" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="20" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation="3.4"/>
+    </filter>
+    <filter id="grainf">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" seed="3"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+</svg>
+
+<svg class="grain" aria-hidden="true" preserveAspectRatio="none"><rect width="100%" height="100%" filter="url(#grainf)"/></svg>
+
+<div class="ledger" aria-hidden="true">
+  <div class="rail"></div>
+  <div class="fill"></div>
+  <div class="bead"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <header class="hero" data-stage>
+    <div class="hero-grid">
+      <div>
+        <p class="brandline"><span class="dash"></span>喫茶 まる珈琲 &nbsp;/&nbsp; 株式指標のはなし</p>
+        <h1>まる珈琲の値段
+          <span class="sub">この一軒を買うのに、<br>いくら出すのが妥当か。</span>
+        </h1>
+        <svg class="underdraw" viewBox="0 0 340 14" aria-hidden="true" data-reveal><path class="draw" d="M4 9 C 70 3, 130 12, 196 6 C 250 1, 300 9, 336 5"/></svg>
+        <p class="hero-lede">PER も EBITDA も EV も、もとをたどれば全部おなじ質問に答えるための道具です。<strong>「この会社、いくらで買えば得なのか」</strong>。町の喫茶店を一軒買う話として、順番にたどります。</p>
+        <p class="scrollcue">
+          <svg class="arw" viewBox="0 0 14 26" aria-hidden="true"><path d="M7 1 L7 22 M2 17 L7 23 L12 17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          スクロールしてください
+        </p>
+      </div>
+
+      <div class="col-stage">
+        <div class="art tilt" data-reveal id="heroArt">
+          <svg viewBox="0 0 720 520" role="img" aria-label="喫茶店まる珈琲の店先。日よけとぶら下がった看板、店先のテーブルに湯気の立つカップ、扉の前で手を振るマスター。">
+            <g class="wash"><circle cx="576" cy="128" r="106" fill="var(--koji)"/></g>
+            <g class="wash" style="opacity:calc(var(--wash-op) * .7)"><ellipse cx="360" cy="444" rx="308" ry="36" fill="var(--matcha)"/></g>
+            <g class="wash" style="opacity:calc(var(--wash-op) * .45)"><rect x="152" y="182" width="418" height="250" fill="var(--ai-wash)"/></g>
+
+            <g class="rgh">
+              <path d="M158 430 L154 190 L566 184 L562 430 Z" fill="var(--card-2)"/>
+              <path d="M140 190 L580 184 L578 166 L142 172 Z" fill="var(--card)"/>
+              <path d="M194 296 L330 292 L332 392 L196 394 Z" fill="var(--koji)" opacity=".34"/>
+              <path d="M382 430 L380 316 A46 46 0 0 1 472 313 L474 430 Z" fill="var(--card)"/>
+              <path d="M166 230 L428 224 L436 264 q-22 20 -44 0 q-22 20 -44 0 q-22 20 -44 0 q-22 20 -44 0 q-22 20 -44 0 q-22 20 -44 0 Z" fill="var(--bengara)" opacity=".78"/>
+              <path d="M470 288 L562 285 L564 326 L472 329 Z" fill="var(--card)"/>
+            </g>
+
+            <g class="ink rgh">
+              <path class="draw" style="--i:0" d="M6 434 C150 424 300 440 470 429 C600 421 680 436 714 430"/>
+              <path class="draw ink-b" style="--i:1" d="M158 430 L154 190 L566 184 L562 430"/>
+              <path class="draw" style="--i:2" d="M140 190 L580 184 L578 166 L142 172 Z"/>
+              <path class="draw" style="--i:3" d="M166 230 L428 224 L436 264 q-22 20 -44 0 q-22 20 -44 0 q-22 20 -44 0 q-22 20 -44 0 q-22 20 -44 0 q-22 20 -44 0 Z"/>
+              <path class="draw ink-t" style="--i:4" d="M212 227 L218 264 M256 226 L262 263 M300 225 L306 262 M344 224 L350 261 M388 223 L394 260"/>
+              <path class="draw" style="--i:4" d="M194 296 L330 292 L332 392 L196 394 Z"/>
+              <path class="draw ink-t" style="--i:5" d="M263 294 L264 393 M195 344 L331 342"/>
+              <path class="draw" style="--i:5" d="M382 430 L380 316 A46 46 0 0 1 472 313 L474 430"/>
+              <path class="draw ink-t" style="--i:6" d="M476 262 L480 288 M556 258 L552 288"/>
+              <path class="draw" style="--i:6" d="M470 288 L562 285 L564 326 L472 329 Z"/>
+            </g>
+
+            <text class="hand" x="517" y="314" text-anchor="middle" font-size="22" style="fill:var(--bengara)">まる珈琲</text>
+
+            <g class="rgh">
+              <path d="M408 430 L412 368 q15 -12 30 0 L446 430 Z" fill="var(--card)"/>
+              <path class="wash" d="M414 430 L416 384 q11 -6 22 0 L440 430 Z" fill="var(--matcha)" style="opacity:.75"/>
+              <circle cx="427" cy="332" r="18" fill="var(--card)"/>
+              <path d="M409 330 a18 18 0 0 1 36 -2 q-9 -9 -19 -6 q-10 3 -17 8 Z" fill="var(--ink)"/>
+            </g>
+            <g class="ink rgh">
+              <path class="draw" style="--i:7" d="M408 430 L412 368 q15 -12 30 0 L446 430"/>
+              <circle class="draw" style="--i:7" cx="427" cy="332" r="18"/>
+              <path class="draw" style="--i:8" d="M444 382 q23 -8 25 -34"/>
+              <circle class="draw ink-t" style="--i:8" cx="470" cy="344" r="6"/>
+              <path class="draw ink-t" style="--i:8" d="M424 431 L424 402 M433 431 L433 402"/>
+            </g>
+
+            <g class="rgh">
+              <ellipse cx="612" cy="404" rx="52" ry="11" fill="var(--card)"/>
+              <path d="M596 372 L630 371 L625 392 a13 6 0 0 1 -25 0 Z" fill="var(--card)"/>
+            </g>
+            <g class="ink rgh">
+              <ellipse class="draw" style="--i:9" cx="612" cy="404" rx="52" ry="11"/>
+              <path class="draw ink-t" style="--i:9" d="M612 411 L612 430 M597 431 L629 430"/>
+              <ellipse class="draw ink-t" style="--i:10" cx="612" cy="396" rx="25" ry="6"/>
+              <path class="draw" style="--i:10" d="M596 372 L630 371 L625 392 a13 6 0 0 1 -25 0 Z"/>
+              <path class="draw ink-t" style="--i:10" d="M630 375 q13 5 0 13"/>
+            </g>
+            <g class="ink ink-t steam" style="stroke:var(--ink-3)">
+              <path d="M604 364 c-7 -12 7 -19 0 -31 c-7 -12 6 -19 0 -30"/>
+              <path d="M620 366 c-7 -12 7 -19 0 -31 c-7 -12 6 -19 0 -30" style="animation-delay:-1.4s"/>
+            </g>
+
+            <g class="rgh">
+              <path class="wash" d="M176 430 L182 398 L226 397 L219 430 Z" fill="var(--bengara)" style="opacity:.85"/>
+              <path class="wash" d="M203 396 q-27 -22 -31 -53 q27 8 31 53 M203 396 q25 -26 33 -53 q-27 6 -33 53 M203 396 q-7 -35 2 -61 q13 27 -2 61" fill="var(--matcha)" style="opacity:.9"/>
+            </g>
+            <g class="ink ink-t rgh">
+              <path class="draw" style="--i:11" d="M176 430 L182 398 L226 397 L219 430 Z M178 398 L229 396"/>
+              <path class="draw" style="--i:12" d="M203 396 q-27 -22 -31 -53 q27 8 31 53"/>
+              <path class="draw" style="--i:12" d="M203 396 q25 -26 33 -53 q-27 6 -33 53"/>
+              <path class="draw" style="--i:13" d="M203 396 q-7 -35 2 -61 q13 27 -2 61"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ 一 ============ -->
+  <section class="spread" data-stage id="s1">
+    <div class="col-text" data-reveal>
+      <p class="eyebrow"><span class="num">一</span>まず、前提から</p>
+      <h2>株を買う、とは<br>会社の一部を買うこと</h2>
+      <p>「株を買う」と聞くと、数字が上下するゲームのように見えます。でも正体は、<strong>会社の所有権を細かく切り分けたもの</strong>です。</p>
+      <p>まる珈琲の株が全部で 1,000 株あるとして、あなたが 10 株持っていれば、あなたはこの店の 1% のオーナー。豆が売れて店が儲かれば、その 1% があなたの取り分になります。</p>
+      <p>だから、これから出てくる指標の役割はひとつだけです。<strong>いくらで買えば得なのかを測ること</strong>。それ以上でも以下でもありません。</p>
+      <p class="note">カップの表面を 10 等分したうちの一切れ。<br>持ち分とは、だいたいこういう感覚のものです。</p>
+    </div>
+    <div class="col-stage">
+      <div class="art tilt rv" data-reveal>
+        <svg viewBox="0 0 560 470" role="img" aria-label="真上から見たコーヒーカップ。液面が10等分され、そのうち一切れが持ち上がっている。">
+          <g class="wash"><circle cx="278" cy="248" r="176" fill="var(--koji)"/></g>
+          <g class="rgh">
+            <circle cx="278" cy="248" r="164" fill="var(--card)"/>
+            <circle cx="278" cy="248" r="126" fill="var(--bengara)" opacity=".55"/>
+          </g>
+          <g class="ink rgh">
+            <circle class="draw" style="--i:0" cx="278" cy="248" r="164"/>
+            <circle class="draw" style="--i:1" cx="278" cy="248" r="126"/>
+            <path class="draw ink-t" style="--i:2" d="M278 248 L378 174 M278 248 L398 285 M278 248 L316 368 M278 248 L200 348 M278 248 L155 292 M278 248 L163 194 M278 248 L233 130 M278 248 L354 148"/>
+          </g>
+          <g class="slice">
+            <path class="rgh" d="M278 248 L278 122 A126 126 0 0 1 352 146 Z" fill="var(--bengara)" opacity=".8"/>
+            <path class="ink rgh draw" style="--i:3" d="M278 248 L278 122 A126 126 0 0 1 352 146 Z"/>
+          </g>
+          <g class="ink ink-t rgh" style="stroke:var(--ink-3)">
+            <path class="draw" style="--i:4" d="M418 108 C 392 108 372 122 354 138 M354 138 l 16 -1 M354 138 l 6 -14"/>
+            <path class="draw" style="--i:4" d="M92 386 C 130 392 168 380 196 356 M196 356 l -16 0 M196 356 l -5 15"/>
+          </g>
+          <text class="hand" x="428" y="102" font-size="17">あなたの 10 株 ＝ 1%</text>
+          <text class="hand" x="84" y="404" font-size="17" text-anchor="start">まる珈琲ぜんぶ ＝ 1,000 株</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 二 ============ -->
+  <section class="spread rev" data-stage id="s2">
+    <div class="col-text" data-reveal>
+      <p class="eyebrow"><span class="num">二</span>この店の数字</p>
+      <h2>まる珈琲の帳簿を<br>開いてみる</h2>
+      <p>これから最後まで、この 4 つの数字だけを使います。難しい言葉が出てきたら、ここに戻ってきてください。</p>
+      <div class="ledgercard rv" data-reveal style="margin-top:1.5rem">
+        <h3>まる珈琲 — 決算のあらまし</h3>
+        <ul class="rows">
+          <li><span>発行済の株数</span><b>1,000 株</b></li>
+          <li><span>1 株の値段（株価）</span><b>3,000 円</b></li>
+          <li><span>1 年の純利益</span><b>30 万円</b></li>
+          <li class="total"><span>会社ぜんぶの値札（時価総額）</span><b>300 万円</b></li>
+        </ul>
+      </div>
+      <p class="note">時価総額 ＝ 株価 3,000 円 × 1,000 株。<br>「株価が高い会社＝大きい会社」ではありません。株数を掛けて初めて、会社の大きさになります。</p>
+    </div>
+    <div class="col-stage">
+      <div class="art tilt rv" data-reveal>
+        <svg viewBox="0 0 560 440" role="img" aria-label="机の上に開かれた帳簿、万年筆、コーヒーカップ、レシート。">
+          <g class="wash"><ellipse cx="286" cy="252" rx="248" ry="176" fill="var(--matcha)"/></g>
+          <g class="rgh">
+            <path d="M64 316 L100 128 L286 150 L282 344 Z" fill="var(--card)"/>
+            <path d="M286 150 L472 122 L500 308 L282 344 Z" fill="var(--card-2)"/>
+          </g>
+          <g class="ink rgh">
+            <path class="draw ink-b" style="--i:0" d="M64 316 L100 128 L286 150 L282 344 Z"/>
+            <path class="draw ink-b" style="--i:1" d="M286 150 L472 122 L500 308 L282 344"/>
+            <path class="draw ink-t" style="--i:2" d="M112 178 L272 196 M108 208 L272 224 M104 238 L271 252 M100 268 L270 280 M96 296 L269 308"/>
+            <path class="draw ink-t" style="--i:3" d="M300 178 L462 154 M303 208 L466 186 M306 238 L470 218 M309 268 L474 250"/>
+          </g>
+          <g class="rgh">
+            <path class="wash" d="M356 372 L520 336 L534 400 L370 434 Z" fill="var(--koji)" style="opacity:.9"/>
+          </g>
+          <g class="ink ink-t rgh">
+            <path class="draw" style="--i:4" d="M356 372 L520 336 L528 372 l 8 6 l -8 6 l 8 6 l -8 6 L 370 434 Z"/>
+            <path class="draw" style="--i:5" d="M372 390 L470 368 M376 408 L448 392"/>
+          </g>
+          <g class="rgh">
+            <ellipse cx="120" cy="392" rx="60" ry="26" fill="var(--card)"/>
+            <ellipse cx="120" cy="390" rx="44" ry="18" fill="var(--bengara)" opacity=".7"/>
+          </g>
+          <g class="ink rgh">
+            <ellipse class="draw" style="--i:6" cx="120" cy="392" rx="60" ry="26"/>
+            <ellipse class="draw ink-t" style="--i:6" cx="120" cy="390" rx="44" ry="18"/>
+          </g>
+          <g class="ink rgh">
+            <path class="draw ink-b" style="--i:7" d="M196 106 L328 64"/>
+            <path class="draw" style="--i:7" d="M196 106 L182 112 L186 96 Z"/>
+            <path class="draw ink-t" style="--i:8" d="M300 74 L308 96"/>
+          </g>
+          <text class="hand-s" x="120" y="150" font-size="16" style="fill:var(--ink-3)">帳簿</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 三 ============ -->
+  <section class="spread" data-stage id="s3">
+    <div class="col-text" data-reveal>
+      <p class="eyebrow"><span class="num">三</span>PER</p>
+      <h2>元を取るのに、<br>何年かかるか</h2>
+      <p>まず <b class="fig">EPS</b>（1 株あたり利益）を出します。利益を株数で割るだけです。30 万円 ÷ 1,000 株 ＝ <b class="fig">300 円</b>。1 株持っていると、年に 300 円ぶんの利益があなたの取り分になる、ということ。</p>
+      <div class="formula">
+        <span class="lbl">PER</span>
+        株価 <b>3,000 円</b> ÷ 1株利益 <b>300 円</b> ＝ <span class="res">10 倍</span>
+      </div>
+      <p>意味は、<strong>今の利益がこのまま続くなら 10 年で買値の元が取れる</strong>。300 万円で店を買って、毎年 30 万円ずつ返ってくる。10 年で 300 万円です。</p>
+      <p>低ければ（5 倍）5 年で元が取れる＝割安。高ければ（50 倍）50 年かかる＝割高、あるいは「これから利益が伸びるはず」と皆が期待している。日本株の平均はだいたい 15 倍前後です。</p>
+      <p class="note">PER は単独では意味を持ちません。同じ業種の他社と並べて、はじめて高い・低いが言えます。</p>
+    </div>
+    <div class="col-stage">
+      <div class="art tilt rv" data-reveal>
+        <svg viewBox="0 0 520 500" role="img" aria-label="10枚のコインが積み上がっていく図。1年に1枚ずつ、10年で買値ぶんになる。">
+          <defs>
+            <g id="coinshape">
+              <path d="M-78 0 v13 a78 21 0 0 0 156 0 v-13 z" fill="var(--coin-edge)"/>
+              <ellipse cx="0" cy="0" rx="78" ry="21" fill="var(--coin-face)"/>
+              <path d="M-78 0 v13 a78 21 0 0 0 156 0 v-13" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/>
+              <ellipse cx="0" cy="0" rx="78" ry="21" fill="none" stroke="var(--ink)" stroke-width="2.2"/>
+            </g>
+          </defs>
+          <g class="wash"><ellipse cx="270" cy="300" rx="190" ry="200" fill="var(--koji)"/></g>
+
+          <g transform="translate(270 420)"><g class="coin" style="--i:0"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 393)"><g class="coin" style="--i:1"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 366)"><g class="coin" style="--i:2"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 339)"><g class="coin" style="--i:3"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 312)"><g class="coin" style="--i:4"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 285)"><g class="coin" style="--i:5"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 258)"><g class="coin" style="--i:6"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 231)"><g class="coin" style="--i:7"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 204)"><g class="coin" style="--i:8"><use href="#coinshape"/></g></g>
+          <g transform="translate(270 177)"><g class="coin" style="--i:9"><use href="#coinshape"/></g></g>
+
+          <g class="ink ink-t rgh" style="stroke:var(--ink-3)">
+            <path class="draw" style="--i:2" d="M156 168 h-18 v274 h18"/>
+          </g>
+          <text class="hand" transform="translate(120 306) rotate(-90)" text-anchor="middle" font-size="17">10 年ぶん ＝ 300 万円</text>
+
+          <g class="coin" style="--i:0"><text class="hand-s" x="360" y="426">1 年目 ／ 30 万</text></g>
+          <g class="coin" style="--i:9"><text class="hand-s" x="360" y="183">10 年目</text></g>
+
+          <g class="rgh">
+            <circle cx="452" cy="316" r="17" fill="var(--card)"/>
+            <path d="M436 470 L440 352 q13 -11 26 0 L470 470 Z" fill="var(--card)"/>
+          </g>
+          <g class="ink rgh">
+            <circle class="draw" style="--i:6" cx="452" cy="316" r="17"/>
+            <path class="draw" style="--i:6" d="M436 470 L440 352 q13 -11 26 0 L470 470"/>
+            <path class="draw ink-t" style="--i:7" d="M440 366 q-22 -14 -24 -44"/>
+          </g>
+          <path class="ink ink-t rgh draw" style="--i:8;stroke:var(--bengara)" d="M406 258 C 388 242 378 220 380 200 M380 200 l 13 8 M380 200 l -11 11"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 四 ============ -->
+  <section class="spread rev" data-stage id="s4">
+    <div class="col-text" data-reveal>
+      <p class="eyebrow"><span class="num">四</span>EBITDA</p>
+      <h2>本業が生んだ、<br>ほんとうの現金</h2>
+      <p>3 年前、まる珈琲は <b class="fig">60 万円</b>のエスプレッソマシンを買いました。60 万円を買った年に全部費用にすると、その年だけ大赤字に見えてしまう。だから会計では 6 年に分けて、<strong>毎年 10 万円ずつ費用として計上します</strong>。これが減価償却です。</p>
+      <p>ここが肝心で、<strong>今年計上した減価償却費 20 万円は、今年財布から出ていったお金ではありません</strong>。支払いは 3 年前に済んでいます。帳簿の上だけの費用です。</p>
+      <div class="formula">
+        <span class="lbl">EBITDA</span>
+        営業利益 <b>40 万円</b> ＋ 減価償却費 <b>20 万円</b> ＝ <span class="res">60 万円</span>
+      </div>
+      <p>だから足し戻すと、実際に手元に残った現金に近づきます。名前の通り「利息・税金・減価償却を差し引く前の利益」。<strong>借金の額も、税率も、設備をいつ買ったかも取り払った、素の稼ぐ力</strong>です。</p>
+      <p class="note">Earnings Before Interest, Taxes, Depreciation and Amortization。<br>Depreciation は工場や機械、Amortization はのれんやソフトウェア。日本語だとどちらも減価償却です。</p>
+    </div>
+    <div class="col-stage">
+      <div class="art tilt rv" data-reveal>
+        <svg viewBox="0 0 560 500" role="img" aria-label="60万円のエスプレッソマシンと、その代金が6年ぶんに分けられていく図。">
+          <g class="wash"><ellipse cx="280" cy="230" rx="200" ry="170" fill="var(--ai-wash)"/></g>
+          <g class="rgh">
+            <path d="M158 316 L158 168 Q158 154 172 154 L392 154 Q406 154 406 168 L406 316 Z" fill="var(--card)"/>
+            <path d="M186 154 Q282 108 378 154 Z" fill="var(--card-2)"/>
+            <rect x="196" y="192" width="80" height="54" rx="3" fill="var(--ink)" opacity=".13"/>
+          </g>
+          <g class="ink rgh">
+            <path class="draw ink-b" style="--i:0" d="M158 316 L158 168 Q158 154 172 154 L392 154 Q406 154 406 168 L406 316 Z"/>
+            <path class="draw" style="--i:1" d="M186 154 Q282 108 378 154"/>
+            <circle class="draw" style="--i:1" cx="282" cy="124" r="9"/>
+            <path class="draw ink-t" style="--i:2" d="M196 192 h80 v54 h-80 z"/>
+            <circle class="draw" style="--i:2" cx="344" cy="206" r="26"/>
+            <path class="draw ink-t" style="--i:3" d="M344 206 L358 190"/>
+            <path class="draw" style="--i:3" d="M240 316 L240 340 L280 340 L280 316"/>
+            <path class="draw ink-t" style="--i:3" d="M280 330 L330 334"/>
+            <path class="draw ink-t" style="--i:4" d="M406 240 L444 268 L444 302"/>
+            <path class="draw" style="--i:4" d="M238 366 L282 366 L277 388 a11 5 0 0 1 -34 0 Z"/>
+          </g>
+          <g class="ink ink-t steam" style="stroke:var(--ink-3)">
+            <path d="M252 356 c-6 -10 6 -16 0 -26"/>
+            <path d="M268 356 c-6 -10 6 -16 0 -26" style="animation-delay:-1.1s"/>
+          </g>
+          <g class="rgh">
+            <path class="wash" d="M60 96 h96 l18 24 l-18 24 h-96 z" fill="var(--koji)" style="opacity:.95"/>
+          </g>
+          <g class="ink rgh">
+            <path class="draw" style="--i:5" d="M60 96 h96 l18 24 l-18 24 h-96 z"/>
+            <circle class="draw ink-t" style="--i:5" cx="76" cy="120" r="5"/>
+            <path class="draw ink-t" style="--i:6" d="M174 120 Q206 128 190 156"/>
+          </g>
+          <text class="hand" x="112" y="127" text-anchor="middle" font-size="19" style="fill:var(--bengara)">60 万円</text>
+
+          <g class="tiles">
+            <g class="tile" style="--i:0"><rect x="42" y="424" width="66" height="46" rx="2" style="fill:var(--matcha)" opacity=".55"/><rect class="ink ink-t" x="42" y="424" width="66" height="46" rx="2"/><text class="hand-s" x="75" y="452" text-anchor="middle" font-size="14">10万</text></g>
+            <g class="tile" style="--i:1"><rect x="118" y="424" width="66" height="46" rx="2" style="fill:var(--matcha)" opacity=".55"/><rect class="ink ink-t" x="118" y="424" width="66" height="46" rx="2"/><text class="hand-s" x="151" y="452" text-anchor="middle" font-size="14">10万</text></g>
+            <g class="tile" style="--i:2"><rect x="194" y="424" width="66" height="46" rx="2" style="fill:var(--matcha)" opacity=".55"/><rect class="ink ink-t" x="194" y="424" width="66" height="46" rx="2"/><text class="hand-s" x="227" y="452" text-anchor="middle" font-size="14">10万</text></g>
+            <g class="tile" style="--i:3"><rect x="270" y="424" width="66" height="46" rx="2" style="fill:var(--matcha)" opacity=".55"/><rect class="ink ink-t" x="270" y="424" width="66" height="46" rx="2"/><text class="hand-s" x="303" y="452" text-anchor="middle" font-size="14">10万</text></g>
+            <g class="tile" style="--i:4"><rect x="346" y="424" width="66" height="46" rx="2" style="fill:var(--matcha)" opacity=".55"/><rect class="ink ink-t" x="346" y="424" width="66" height="46" rx="2"/><text class="hand-s" x="379" y="452" text-anchor="middle" font-size="14">10万</text></g>
+            <g class="tile" style="--i:5"><rect x="422" y="424" width="66" height="46" rx="2" style="fill:var(--matcha)" opacity=".55"/><rect class="ink ink-t" x="422" y="424" width="66" height="46" rx="2"/><text class="hand-s" x="455" y="452" text-anchor="middle" font-size="14">10万</text></g>
+          </g>
+          <g class="ink ink-t rgh" style="stroke:var(--ink-3)">
+            <path class="draw" style="--i:7" d="M42 490 h446"/>
+          </g>
+          <text class="hand-s" x="265" y="412" text-anchor="middle" font-size="15">6 年に分けて、毎年の費用にする</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 五 ============ -->
+  <section class="spread" data-stage id="s5">
+    <div class="col-text" data-reveal>
+      <p class="eyebrow"><span class="num">五</span>EV</p>
+      <h2>店を丸ごと手に入れる、<br>ほんとうの値段</h2>
+      <p>まる珈琲には、まだ言っていない事情があります。開店資金の<strong>借金が 200 万円</strong>残っていて、一方でレジと口座に<strong>現金が 50 万円</strong>ある。</p>
+      <p>株を全部買えば 300 万円。でも、それで終わりでしょうか。<strong>買った瞬間、200 万円の借金もあなたのものになります。</strong>逆に、金庫の 50 万円もあなたのものです。</p>
+      <div class="formula">
+        <span class="lbl">EV ／ 企業価値</span>
+        時価総額 <b>300 万</b> ＋ 借金 <b>200 万</b> − 現金 <b>50 万</b> ＝ <span class="res">450 万円</span>
+      </div>
+      <p>株の値札 300 万円は、実は本当の値段ではなかったわけです。EV は Enterprise Value。<strong>この店を自分のものにするための総額</strong>を指します。</p>
+      <p class="note">現金を引くのは、買った翌日にその 50 万円で借金を返せるから。実質的に払う額がその分だけ軽くなります。</p>
+    </div>
+    <div class="col-stage">
+      <div class="art tilt rv" data-reveal>
+        <svg viewBox="0 0 600 470" role="img" aria-label="店の値札300万円に、借金200万円の袋が加わり、現金50万円の金庫が差し引かれる図。">
+          <g class="wash"><ellipse cx="300" cy="300" rx="250" ry="160" fill="var(--matcha)"/></g>
+          <g class="rgh">
+            <path d="M186 400 L186 226 L396 226 L396 400 Z" fill="var(--card-2)"/>
+            <path d="M164 226 L291 152 L418 226 Z" fill="var(--card)"/>
+            <path d="M254 400 L254 306 L330 306 L330 400 Z" fill="var(--bengara)" opacity=".45"/>
+          </g>
+          <g class="ink rgh">
+            <path class="draw" style="--i:0" d="M24 402 C 160 396 380 408 578 400"/>
+            <path class="draw ink-b" style="--i:0" d="M186 400 L186 226 L396 226 L396 400"/>
+            <path class="draw" style="--i:1" d="M164 226 L291 152 L418 226 Z"/>
+            <path class="draw" style="--i:2" d="M254 400 L254 306 L330 306 L330 400"/>
+            <circle class="draw ink-t" style="--i:2" cx="320" cy="356" r="4"/>
+            <path class="draw ink-t" style="--i:3" d="M206 258 h48 v40 h-48 z M356 258 h-48 v40 h48 z"/>
+          </g>
+          <text class="hand" x="291" y="206" text-anchor="middle" font-size="17" style="fill:var(--bengara)">まる珈琲</text>
+
+          <g class="sack">
+            <path class="rgh" d="M430 400 q-16 -78 44 -104 q60 26 44 104 z" fill="var(--ink)" opacity=".16"/>
+            <g class="ink rgh">
+              <path class="draw" style="--i:4" d="M430 400 q-16 -78 44 -104 q60 26 44 104 z"/>
+              <path class="draw ink-t" style="--i:5" d="M452 300 q22 -16 44 0 M462 292 q12 -10 24 0"/>
+            </g>
+            <text class="hand" x="474" y="366" text-anchor="middle" font-size="16">借金 200万</text>
+          </g>
+
+          <g class="cashbox">
+            <path class="rgh" d="M62 258 h108 v72 h-108 z" fill="var(--koji)" opacity=".6"/>
+            <g class="ink rgh">
+              <path class="draw" style="--i:6" d="M62 258 h108 v72 h-108 z"/>
+              <path class="draw ink-t" style="--i:6" d="M62 282 h108"/>
+              <circle class="draw ink-t" style="--i:7" cx="116" cy="304" r="8"/>
+              <path class="draw ink-t" style="--i:7" d="M96 258 q20 -26 40 0"/>
+            </g>
+            <text class="hand" x="116" y="350" text-anchor="middle" font-size="16">現金 50万</text>
+          </g>
+
+          <g class="ink ink-t rgh" style="stroke:var(--bengara)">
+            <path class="draw" style="--i:8" d="M416 336 L392 336 M404 328 L392 336 L404 344"/>
+            <path class="draw" style="--i:8" d="M180 300 L206 300 M194 292 L206 300 L194 308"/>
+          </g>
+          <text class="hand-s" x="474" y="248" text-anchor="middle" font-size="15" style="fill:var(--bengara)">＋ 背負わされる</text>
+          <text class="hand-s" x="116" y="232" text-anchor="middle" font-size="15" style="fill:var(--bengara)">− もらえる</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 六 ============ -->
+  <section class="spread rev" data-stage id="s6">
+    <div class="col-text" data-reveal>
+      <p class="eyebrow"><span class="num">六</span>EV / EBITDA</p>
+      <h2>買収する人から見た、<br>元を取るまでの年数</h2>
+      <div class="formula">
+        <span class="lbl">EV / EBITDA</span>
+        EV <b>450 万円</b> ÷ EBITDA <b>60 万円</b> ＝ <span class="res">7.5 倍</span>
+      </div>
+      <p>考え方は PER とまったく同じ「元を取るまでの年数」です。違うのは中身。<strong>借金を含めた本当の総額</strong>を、<strong>本業が生む本当の現金</strong>で割っている。分子も分母も、PER より実態に近い数字に入れ替えてあります。</p>
+      <p>だから M&amp;A や投資ファンドは、まずこの指標を見ます。彼らは株主ではなく<strong>会社を丸ごと引き受ける当事者</strong>で、借金も一緒に背負う立場だからです。買収価格の相場観は伝統的に「EV/EBITDA 8〜12 倍」。</p>
+      <p class="note">目安（割高／中立／割安の順）<br>日本株 20 ／ 10 ／ 5 倍　　米国株 25 ／ 14 ／ 8 倍　　公益 14 ／ 10 ／ 7 倍</p>
+    </div>
+    <div class="col-stage">
+      <div class="art tilt rv" data-reveal>
+        <svg viewBox="0 0 460 520" role="img" aria-label="まる珈琲のレシート。時価総額300万に借金200万を足し現金50万を引いてEV450万、EBITDA60万で割って7.5倍。">
+          <g class="wash"><ellipse cx="230" cy="270" rx="190" ry="230" fill="var(--ai-wash)"/></g>
+          <path class="rgh" d="M110 44 C150 34 300 34 346 44 L352 452 l-12 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 L116 452 Z" fill="var(--card)"/>
+          <g class="ink rgh">
+            <path class="draw ink-t" style="--i:0" d="M110 44 C150 34 300 34 346 44 L352 452 l-12 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 l-14 10 l-14 -10 L116 452 Z"/>
+          </g>
+          <g class="rcpt" font-size="15">
+            <text class="hand" x="231" y="88" text-anchor="middle" font-size="18" style="fill:var(--bengara)">ま る 珈 琲</text>
+            <path class="ink ink-t" d="M132 108 h198" stroke-dasharray="4 5"/>
+            <text class="fig" x="134" y="146" style="fill:var(--ink-2)">時価総額</text><text class="fig" x="330" y="146" text-anchor="end" style="fill:var(--ink)">3,000,000</text>
+            <text class="fig" x="134" y="180" style="fill:var(--ink-2)">＋ 借入金</text><text class="fig" x="330" y="180" text-anchor="end" style="fill:var(--ink)">2,000,000</text>
+            <text class="fig" x="134" y="214" style="fill:var(--ink-2)">− 現預金</text><text class="fig" x="330" y="214" text-anchor="end" style="fill:var(--ink)">500,000</text>
+            <path class="ink ink-t" d="M132 232 h198"/>
+            <text class="fig" x="134" y="266" style="fill:var(--ai)" font-size="17">EV</text><text class="fig" x="330" y="266" text-anchor="end" style="fill:var(--ai)" font-size="17">4,500,000</text>
+            <text class="fig" x="134" y="312" style="fill:var(--ink-2)">÷ EBITDA</text><text class="fig" x="330" y="312" text-anchor="end" style="fill:var(--ink)">600,000</text>
+            <path class="ink ink-t" d="M132 332 h198" stroke-dasharray="4 5"/>
+            <text class="fig" x="134" y="378" style="fill:var(--bengara)" font-size="19">EV/EBITDA</text><text class="fig" x="330" y="378" text-anchor="end" style="fill:var(--bengara)" font-size="23">7.5</text>
+            <text class="hand-s" x="231" y="418" text-anchor="middle" font-size="15">本業 7.5 年ぶんの現金で、この店は買える</text>
+          </g>
+          <g class="ink ink-t rgh" style="stroke:var(--bengara)">
+            <path class="draw" style="--i:4" d="M396 336 C 380 356 366 368 344 374 M344 374 l 16 2 M344 374 l 11 -12"/>
+          </g>
+          <text class="hand" x="404" y="326" font-size="16" style="fill:var(--bengara)" text-anchor="end">PER なら 10 倍</text>
+          <text class="hand-s" x="404" y="300" font-size="14" text-anchor="end">同じ店なのに、数字が違う</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 七 ============ -->
+  <section class="band" data-stage id="s7">
+    <div class="band-head" data-reveal>
+      <p class="eyebrow"><span class="num">七</span>結論</p>
+      <h2>道の向かいの店と、<br>並べてみる</h2>
+      <p>向かいに「かど珈琲」があります。株価も利益もまる珈琲とまったく同じ。ただひとつ、<strong>借金がありません</strong>。PER で見ると二軒は瓜ふたつです。</p>
+    </div>
+
+    <div class="vs">
+      <article class="shopcard rv" data-reveal style="--i:0">
+        <div class="shopart">
+          <svg viewBox="0 0 300 200" role="img" aria-label="重い借金の袋を背負ったまる珈琲。">
+            <g class="wash"><ellipse cx="150" cy="120" rx="130" ry="80" fill="var(--bengara)"/></g>
+            <g class="rgh">
+              <path d="M84 170 L84 92 L196 92 L196 170 Z" fill="var(--card-2)"/>
+              <path d="M72 92 L140 52 L208 92 Z" fill="var(--card)"/>
+            </g>
+            <g class="ink ink-t rgh">
+              <path class="draw" d="M18 172 C90 168 210 176 284 170"/>
+              <path class="draw" d="M84 170 L84 92 L196 92 L196 170"/>
+              <path class="draw" d="M72 92 L140 52 L208 92 Z"/>
+              <path class="draw" d="M124 170 L124 126 L160 126 L160 170"/>
+              <path class="draw" d="M212 170 q-10 -52 30 -70 q40 18 30 70 z"/>
+              <path class="draw" d="M226 104 q16 -12 32 0"/>
+            </g>
+            <text class="hand-s" x="242" y="152" text-anchor="middle" font-size="13">借金 200万</text>
+          </svg>
+        </div>
+        <h3>まる珈琲</h3>
+        <ul class="rows">
+          <li><span>時価総額</span><b>300 万</b></li>
+          <li><span>1株利益（EPS）</span><b>300 円</b></li>
+          <li class="same"><span>PER</span><b>10 倍</b></li>
+          <li><span>借金 / 現金</span><b>200万 / 50万</b></li>
+          <li><span>EV</span><b>450 万</b></li>
+          <li><span>EBITDA</span><b>60 万</b></li>
+          <li class="total"><span>EV / EBITDA</span><b>7.5 倍</b></li>
+        </ul>
+      </article>
+
+      <article class="shopcard rv" data-reveal style="--i:1">
+        <div class="shopart">
+          <svg viewBox="0 0 300 200" role="img" aria-label="借金のない、身軽なかど珈琲。">
+            <g class="wash"><ellipse cx="150" cy="120" rx="130" ry="80" fill="var(--matcha)"/></g>
+            <g class="rgh">
+              <path d="M84 170 L84 92 L196 92 L196 170 Z" fill="var(--card-2)"/>
+              <path d="M72 92 L140 52 L208 92 Z" fill="var(--card)"/>
+            </g>
+            <g class="ink ink-t rgh">
+              <path class="draw" d="M18 172 C90 168 210 176 284 170"/>
+              <path class="draw" d="M84 170 L84 92 L196 92 L196 170"/>
+              <path class="draw" d="M72 92 L140 52 L208 92 Z"/>
+              <path class="draw" d="M124 170 L124 126 L160 126 L160 170"/>
+              <path class="draw" d="M242 96 a22 24 0 1 1 .1 0 Z"/>
+              <path class="draw" d="M242 120 q-8 22 4 46"/>
+            </g>
+            <text class="hand-s" x="242" y="152" text-anchor="middle" font-size="13">借金 0</text>
+          </svg>
+        </div>
+        <h3>かど珈琲</h3>
+        <ul class="rows">
+          <li><span>時価総額</span><b>300 万</b></li>
+          <li><span>1株利益（EPS）</span><b>300 円</b></li>
+          <li class="same"><span>PER</span><b>10 倍</b></li>
+          <li><span>借金 / 現金</span><b>0 / 50万</b></li>
+          <li><span>EV</span><b>250 万</b></li>
+          <li><span>EBITDA</span><b>60 万</b></li>
+          <li class="total win"><span>EV / EBITDA</span><b>4.2 倍</b></li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="chartwrap rv" data-reveal>
+      <svg viewBox="0 0 720 250" role="img" aria-label="EV/EBITDA の横棒グラフ。まる珈琲7.5倍、かど珈琲4.2倍。日本株の目安は10倍。">
+        <g class="grid ink ink-t" style="stroke:var(--rule)">
+          <path d="M150 46 v150 M277.5 46 v150 M405 46 v150 M532.5 46 v150 M660 46 v150"/>
+        </g>
+        <g class="bar" style="--v:7.5">
+          <path class="rgh" d="M150 64 h318.75 v42 h-318.75 z" fill="var(--bengara)" opacity=".62"/>
+          <path class="ink ink-t rgh" d="M150 64 h318.75 v42 h-318.75 z"/>
+        </g>
+        <g class="bar" style="--v:4.2">
+          <path class="rgh" d="M150 130 h178.5 v42 h-178.5 z" fill="var(--matcha)" opacity=".62"/>
+          <path class="ink ink-t rgh" d="M150 130 h178.5 v42 h-178.5 z"/>
+        </g>
+        <text class="hand" x="140" y="92" text-anchor="end" font-size="16">まる珈琲</text>
+        <text class="hand" x="140" y="158" text-anchor="end" font-size="16">かど珈琲</text>
+        <text class="fig" x="482" y="92" font-size="17" style="fill:var(--bengara)">7.5 倍</text>
+        <text class="fig" x="342" y="158" font-size="17" style="fill:var(--matcha)">4.2 倍</text>
+        <path class="ink ink-t" d="M575 40 v164" stroke-dasharray="6 6" style="stroke:var(--ai)"/>
+        <text class="hand-s" x="581" y="34" font-size="14" style="fill:var(--ai)">日本株の中立の目安 10 倍</text>
+        <path class="ink ink-t" d="M150 196 H660"/>
+        <g class="fig" font-size="13" fill="var(--ink-3)" text-anchor="middle">
+          <text x="150" y="220">0</text><text x="277.5" y="220">3</text><text x="405" y="220">6</text><text x="532.5" y="220">9</text><text x="660" y="220">12</text>
+        </g>
+        <text class="hand-s" x="660" y="242" text-anchor="end" font-size="14">EV / EBITDA（倍）</text>
+      </svg>
+    </div>
+
+    <p class="punch rv" data-reveal>PER で見ると二軒は同じ。実際には、<strong>かど珈琲のほうが圧倒的にお買い得</strong>です。<br>まる珈琲を買った人は、翌日から 200 万円の借金返済が始まります。</p>
+    <p class="note punchnote rv" data-reveal>PER は借金の存在をまったく見ていません。これが PER の最大の弱点で、EV/EBITDA が埋めるのは、ちょうどこの穴です。</p>
+  </section>
+
+  <!-- ============ 略語 ============ -->
+  <section class="band" data-stage id="abbr">
+    <div class="band-head" data-reveal>
+      <p class="eyebrow">読み解き</p>
+      <h2>EBITDA は、6 つの<br>単語の頭文字です</h2>
+      <p>呪文に見えるのは、略されているからです。ひらいてしまえば、やっていることは足し算と引き算だけ。</p>
+    </div>
+    <div class="letters">
+      <div class="lt" style="--i:0"><span class="ch">E</span><span class="wd">Earnings</span><span class="jp">利益</span></div>
+      <div class="lt" style="--i:1"><span class="ch">B</span><span class="wd">Before</span><span class="jp">〜を引く前の</span></div>
+      <div class="lt" style="--i:2"><span class="ch">I</span><span class="wd">Interest</span><span class="jp">支払利息</span></div>
+      <div class="lt" style="--i:3"><span class="ch">T</span><span class="wd">Taxes</span><span class="jp">税金</span></div>
+      <div class="lt" style="--i:4"><span class="ch">D</span><span class="wd">Depreciation</span><span class="jp">減価償却<br><i>工場・機械・建物</i></span></div>
+      <div class="lt" style="--i:5"><span class="ch">A</span><span class="wd">Amortization</span><span class="jp">償却<br><i>のれん・ソフトウェア</i></span></div>
+    </div>
+    <div class="abbrgrid">
+      <div class="ab rv" data-reveal style="--i:0"><b>PER</b><span>Price Earnings Ratio ／ 株価収益率。ただしこれは日本式の略で、英語圏では <i>P/E ratio</i> と書きます。海外の資料で PER を探しても出てきません。</span></div>
+      <div class="ab rv" data-reveal style="--i:1"><b>EV</b><span>Enterprise Value ／ 企業価値。株の値札に借金を足し、現金を引いた総額。</span></div>
+      <div class="ab rv" data-reveal style="--i:2"><b>EPS</b><span>Earnings Per Share ／ 1 株あたり利益。純利益 ÷ 株数。</span></div>
+      <div class="ab rv" data-reveal style="--i:3"><b>PBR</b><span>Price Book-value Ratio ／ 株価純資産倍率。これも日本式で、英語では <i>P/B ratio</i>。</span></div>
+    </div>
+  </section>
+
+  <!-- ============ 早見表 ============ -->
+  <section class="band" data-stage id="cheat">
+    <div class="band-head" data-reveal>
+      <p class="eyebrow">早見表</p>
+      <h2>どの指標が、<br>何を答えているか</h2>
+      <p>指標に優劣はありません。質問が違うだけです。手元の疑問に合う道具を選んでください。</p>
+    </div>
+    <div class="tablewrap rv" data-reveal>
+      <table class="cheat">
+        <thead><tr><th scope="col">指標</th><th scope="col">誰の目線</th><th scope="col">答える質問</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">PER</th><td>株主</td><td>株価は利益の何年分か</td></tr>
+          <tr class="hi"><th scope="row">EV / EBITDA</th><td>会社を丸ごと買う人</td><td>借金込みの総額は、本業の現金の何年分か</td></tr>
+          <tr><th scope="row">PBR</th><td>解散するとき</td><td>会社の財産に対して株価は割安か</td></tr>
+          <tr><th scope="row">ROE</th><td>株主</td><td>預けたお金をどれだけ上手に増やしているか</td></tr>
+          <tr><th scope="row">配当利回り</th><td>受け取る人</td><td>毎年いくら現金が戻ってくるか</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 落とし穴 ============ -->
+  <section class="band" data-stage id="pit">
+    <div class="band-head" data-reveal>
+      <p class="eyebrow">気をつけること</p>
+      <h2>この道具が<br>効かない場面</h2>
+      <p>指標が嘘をつくのではなく、使える範囲が決まっているだけです。境界を知っておくと、数字に振り回されずに済みます。</p>
+    </div>
+    <div class="pits">
+      <article class="pit rv" data-reveal style="--i:0">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <g class="wash"><circle cx="60" cy="60" r="46" fill="var(--koji)"/></g>
+          <g class="ink ink-t rgh">
+            <path class="draw" d="M22 96 q0 -46 12 -60 q12 14 12 60 z"/>
+            <path class="draw" d="M22 78 l-10 16 h10 M46 78 l10 16 h-10"/>
+            <path class="draw" d="M74 96 v-42 h30 v42 z M80 54 v-24 h8 v24"/>
+            <path class="draw" d="M84 26 q-8 -10 2 -16 q10 6 2 16"/>
+            <path class="draw" d="M14 106 h92"/>
+          </g>
+          <text class="hand" x="60" y="44" text-anchor="middle" font-size="20" style="fill:var(--bengara)">≠</text>
+        </svg>
+        <h3>業種をまたいで比べない</h3>
+        <p>IT 企業の PER 40 倍と鉄鋼会社の PER 8 倍を並べて「鉄鋼が割安」と言っても意味がありません。成長の速さも設備の重さも違うからです。<b>同じ業種の中でだけ</b>比べます。</p>
+      </article>
+      <article class="pit rv" data-reveal style="--i:1">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <g class="wash"><circle cx="60" cy="58" r="44" fill="var(--bengara)"/></g>
+          <g class="ink ink-t rgh">
+            <path class="draw" d="M28 34 h64 l-10 54 h-44 z"/>
+            <path class="draw" d="M24 34 h72"/>
+            <path class="draw" d="M52 88 q6 8 14 0"/>
+            <ellipse class="draw" cx="56" cy="100" rx="9" ry="4"/>
+            <ellipse class="draw" cx="74" cy="110" rx="9" ry="4"/>
+            <ellipse class="draw" cx="40" cy="112" rx="9" ry="4"/>
+          </g>
+        </svg>
+        <h3>EBITDA には穴がある</h3>
+        <p>減価償却を足し戻すとは、<b>設備の買い替え費用を無かったことにした利益</b>でもあります。工場や通信網のように設備を更新し続けないと商売が回らない業種では、実力を良く見せすぎます。</p>
+      </article>
+      <article class="pit rv" data-reveal style="--i:2">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <g class="wash"><circle cx="60" cy="60" r="44" fill="var(--ai-wash)"/></g>
+          <g class="ink ink-t rgh">
+            <path class="draw" d="M16 50 L60 24 L104 50 Z"/>
+            <path class="draw" d="M20 94 h80 M28 94 V56 M46 94 V56 M64 94 V56 M82 94 V56"/>
+            <path class="draw" d="M12 102 h96"/>
+            <path class="draw" style="stroke:var(--bengara);stroke-width:4" d="M24 106 L98 20"/>
+          </g>
+        </svg>
+        <h3>銀行と保険には使えない</h3>
+        <p>普通の会社にとって借金は返すべき負担ですが、銀行にとってお金を借りること（＝預金）は<b>商売の材料そのもの</b>です。引き算する前提が成り立たないので、銀行は PBR と ROE で見ます。</p>
+      </article>
+      <article class="pit rv" data-reveal style="--i:3">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <g class="wash"><circle cx="60" cy="60" r="42" fill="var(--matcha)"/></g>
+          <g class="ink ink-t rgh">
+            <ellipse class="draw" cx="60" cy="62" rx="34" ry="34"/>
+            <path class="draw" d="M60 28 L52 52 L68 60 L58 96"/>
+            <path class="draw" style="stroke:var(--bengara)" d="M92 96 L92 74 M92 96 L70 96"/>
+            <path class="draw" style="stroke:var(--bengara)" d="M92 96 L64 68"/>
+          </g>
+        </svg>
+        <h3>赤字の会社では計算できない</h3>
+        <p>PER も EV/EBITDA も、割り算の分母がマイナスになった瞬間に数字が意味を失います。赤字企業を測るには、売上に対する倍率（PSR）や資産（PBR）など、別の道具が必要です。</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ 最初の三つ ============ -->
+  <section class="band closing" data-stage id="three">
+    <div class="band-head" data-reveal>
+      <p class="eyebrow">持ち帰るもの</p>
+      <h2>最初に覚えるなら、<br>この三つで足ります</h2>
+    </div>
+    <ol class="three">
+      <li class="rv" data-reveal style="--i:0">
+        <svg class="tick" viewBox="0 0 40 34" aria-hidden="true"><path class="draw" d="M4 18 L15 28 L36 4" fill="none" stroke="var(--matcha)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><b>PER</b><span>一番よく使われ、どこにでも載っている。ただし借金が見えない。</span></div>
+      </li>
+      <li class="rv" data-reveal style="--i:1">
+        <svg class="tick" viewBox="0 0 40 34" aria-hidden="true"><path class="draw" d="M4 18 L15 28 L36 4" fill="none" stroke="var(--matcha)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><b>ROE</b><span>10% 以上あれば、効率よく稼げている会社の目安。</span></div>
+      </li>
+      <li class="rv" data-reveal style="--i:2">
+        <svg class="tick" viewBox="0 0 40 34" aria-hidden="true"><path class="draw" d="M4 18 L15 28 L36 4" fill="none" stroke="var(--matcha)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><b>EV / EBITDA</b><span>PER で安く見える会社が、借金のせいで実は安くないかを確かめる。</span></div>
+      </li>
+    </ol>
+
+    <div class="lastart rv" data-reveal>
+      <svg viewBox="0 0 720 220" role="img" aria-label="閉店後のまる珈琲。灯りの落ちた店先と、湯気の消えたカップ。">
+        <g class="wash"><ellipse cx="360" cy="170" rx="330" ry="52" fill="var(--ai-wash)"/></g>
+        <g class="ink ink-t rgh">
+          <path class="draw" d="M20 182 C200 176 520 190 700 180"/>
+          <path class="draw" d="M250 180 L250 88 L440 88 L440 180"/>
+          <path class="draw" d="M232 88 L345 34 L458 88 Z"/>
+          <path class="draw" d="M318 180 L318 128 L372 128 L372 180"/>
+          <path class="draw" d="M268 108 h34 v26 h-34 z M422 108 h-34 v26 h34 z"/>
+          <path class="draw" d="M520 180 v-22 M500 158 h40 l-4 -14 h-32 z"/>
+          <ellipse class="draw" cx="520" cy="144" rx="14" ry="4"/>
+        </g>
+        <text class="hand" x="345" y="72" text-anchor="middle" font-size="15" style="fill:var(--bengara)">まる珈琲</text>
+        <text class="hand-s" x="600" y="164" font-size="14">またどうぞ</text>
+      </svg>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p><b>まる珈琲は架空の店です。</b>登場する数字はすべて、指標の仕組みを説明するために作った例で、実在の企業の値ではありません。実際の銘柄を見るときは、必ず有価証券報告書や決算短信など一次資料の数字にあたってください。</p>
+    <p class="cap">指標の目安（日本株 20 / 10 / 5 倍、米国株 25 / 14 / 8 倍、公益 14 / 10 / 7 倍）は一般的な水準感で、業種中央値との比較が本筋です。</p>
+  </footer>
+</div>
+
+<style>
+/* ============ scroll-linked motion ============ */
+[data-stage]{--p:.5;--c:0}
+.steam path{stroke-dasharray:5 9;animation:steamup 3.4s linear infinite}
+@keyframes steamup{to{stroke-dashoffset:-28}}
+
+html.motion .slice{transform:translate(calc(var(--p) * 22px), calc(var(--p) * -26px))}
+html.motion .coin{
+  --k:calc((var(--p) - .2) * 16);
+  --on:clamp(0, calc(var(--k) - var(--i)), 1);
+  opacity:var(--on);
+  transform:translateY(calc((1 - var(--on)) * -46px));
+}
+html.motion .tile{
+  --k2:calc((var(--p) - .28) * 13);
+  --on2:clamp(0, calc(var(--k2) - var(--i)), 1);
+  opacity:calc(.16 + .84 * var(--on2));
+  transform:translateY(calc((1 - var(--on2)) * -22px));
+}
+html.motion .sack{transform:translateX(calc((1 - var(--p)) * 130px))}
+html.motion .cashbox{transform:translate(calc((1 - var(--p)) * 44px), calc(var(--p) * -32px))}
+.bar path{vector-effect:non-scaling-stroke}
+html.motion .bar path{
+  transform:scaleX(clamp(.06, calc((var(--p) - .16) * 2.8), 1));
+  transform-box:fill-box;transform-origin:left center;
+}
+html.motion .vs{transform:perspective(1600px) rotateX(calc(var(--c) * -3.2deg))}
+html.motion .shopart{transform:perspective(900px) rotateX(calc(var(--c) * -7deg)) translateZ(24px)}
+
+/* ============ 七: comparison ============ */
+.vs{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(1.1rem,3vw,2rem);transform-style:preserve-3d}
+@media (min-width:760px){.vs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.shopcard{
+  background:var(--card);border:1px solid var(--rule);border-radius:4px;
+  box-shadow:var(--sh-2);padding:clamp(1rem,2.4vw,1.5rem);
+}
+.shopart{margin:-.4rem 0 .9rem}
+.shopart svg{display:block;width:100%;height:auto;overflow:visible}
+.shopcard h3{font-size:1.3rem;margin-bottom:.5rem}
+.shopcard .rows li.same b{color:var(--ink-3)}
+.shopcard .rows li.total.win b{color:var(--matcha)}
+.shopcard .rows li.total b{color:var(--bengara)}
+.chartwrap{margin-top:clamp(2rem,5vw,3.2rem);overflow-x:auto}
+.chartwrap svg{display:block;width:100%;min-width:540px;height:auto}
+.punch{
+  margin-top:clamp(2rem,5vw,3rem);max-width:44rem;text-wrap:balance;
+  font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
+  font-size:clamp(1.12rem,2.4vw,1.5rem);line-height:1.9;color:var(--ink);
+}
+.punch strong{color:var(--bengara);font-weight:700}
+.punchnote{max-width:44rem;margin-top:1.4rem}
+
+/* ============ 略語 ============ */
+.letters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
+@media (min-width:560px){.letters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:980px){.letters{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.lt{
+  background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:1rem .8rem 1.15rem;text-align:center;box-shadow:var(--sh-1);
+  transform-origin:50% 100%;
+}
+.lt .ch{display:block;font-family:"Shippori Mincho B1",serif;font-size:2.5rem;font-weight:800;color:var(--ai);line-height:1}
+.lt .wd{display:block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.74rem;color:var(--ink-2);margin-top:.55rem;letter-spacing:.01em}
+.lt .jp{display:block;font-size:.86rem;color:var(--ink-3);margin-top:.35rem;line-height:1.65}
+.lt .jp i{font-style:normal;font-family:"Klee One",cursive;font-size:.76rem;opacity:.85}
+.abbrgrid{display:grid;gap:.2rem 2rem;margin-top:clamp(1.8rem,4vw,2.8rem);grid-template-columns:minmax(0,1fr)}
+@media (min-width:820px){.abbrgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ab{display:grid;grid-template-columns:4.6rem minmax(0,1fr);gap:1rem;align-items:baseline;padding:1rem 0;border-top:1px solid var(--rule)}
+.ab b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:1.1rem;color:var(--bengara);font-weight:500}
+.ab span{font-size:.94rem;color:var(--ink-2);line-height:1.85}
+.ab i{font-style:italic;font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--ink);font-size:.95em}
+
+/* ============ 早見表 ============ */
+.tablewrap{overflow-x:auto;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+table.cheat{width:100%;border-collapse:collapse;min-width:560px}
+.cheat th,.cheat td{text-align:left;padding:1rem;vertical-align:top;font-size:.98rem}
+.cheat thead th{font-family:"Klee One",cursive;font-weight:600;font-size:.88rem;letter-spacing:.12em;color:var(--bengara);border-bottom:1px solid var(--rule-2)}
+.cheat tbody th{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;color:var(--ink);white-space:nowrap}
+.cheat tbody td{color:var(--ink-2)}
+.cheat tbody tr+tr th,.cheat tbody tr+tr td{border-top:1px solid var(--rule)}
+.cheat tbody tr.hi{background:color-mix(in srgb, var(--koji) 15%, transparent)}
+.cheat tbody tr.hi th{color:var(--bengara)}
+
+/* ============ 落とし穴 ============ */
+.pits{display:grid;gap:clamp(1.4rem,3.5vw,2.4rem);grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.pits{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pit{display:grid;grid-template-columns:86px minmax(0,1fr);gap:.2rem 1.2rem;align-items:start}
+.pit > svg{grid-column:1;grid-row:1 / span 2}
+.pit h3{grid-column:2;grid-row:1}
+.pit p{grid-column:2;grid-row:2}
+.pit > svg{width:86px;height:86px;display:block;overflow:visible}
+.pit h3{font-size:1.08rem;margin-bottom:.45rem}
+.pit p{font-size:.95rem;color:var(--ink-2);line-height:1.85}
+.pit p b{color:var(--ink);font-weight:700}
+@media (max-width:520px){.pit{grid-template-columns:62px minmax(0,1fr);gap:.9rem}.pit > svg{width:62px;height:62px}}
+
+/* ============ 最初の三つ ============ */
+.three{list-style:none;margin:clamp(1.4rem,4vw,2.2rem) 0 0;padding:0;display:grid;gap:.85rem;max-width:46rem}
+.three li{
+  display:grid;grid-template-columns:40px minmax(0,1fr);gap:1.1rem;align-items:start;
+  padding:1.05rem 1.3rem;background:var(--card);border:1px solid var(--rule);border-radius:3px;box-shadow:var(--sh-1);
+}
+.tick{width:34px;height:29px;margin-top:.4rem;overflow:visible}
+.three b{display:block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:1.08rem;color:var(--ai);font-weight:500;margin-bottom:.1rem}
+.three span{display:block;font-size:.96rem;color:var(--ink-2)}
+.lastart{margin-top:clamp(2.4rem,6vw,4rem)}
+.lastart svg{display:block;width:100%;height:auto;overflow:visible}
+
+/* ============ footer ============ */
+.foot{border-top:1px solid var(--rule);margin-top:clamp(2rem,5vw,3rem);padding:clamp(1.8rem,4vw,2.6rem) 0 clamp(3rem,8vw,5rem);max-width:46rem}
+.foot p{font-size:.92rem;color:var(--ink-3);line-height:1.9}
+.foot p b{color:var(--ink-2)}
+.foot .cap{margin-top:.75rem;font-family:"Klee One",cursive;font-size:.86rem}
+
+@media (prefers-reduced-motion: reduce){
+  html.motion .coin, html.motion .tile, html.motion .lt,
+  html.motion .slice, html.motion .sack, html.motion .cashbox,
+  html.motion .vs, html.motion .shopart, html.motion .bar path{opacity:1;transform:none}
+}
+</style>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  var reduce = mq ? mq.matches : false;
+  if (!reduce) root.classList.add('motion');
+
+  if (!reduce) {
+    var draws = document.querySelectorAll('.draw');
+    for (var d = 0; d < draws.length; d++) {
+      try {
+        var len = Math.ceil(draws[d].getTotalLength()) + 4;
+        if (len > 0 && isFinite(len)) draws[d].style.setProperty('--L', len);
+      } catch (e) {}
+    }
+  }
+
+  var targets = [].slice.call(document.querySelectorAll('[data-reveal]'));
+  function showAll(){ for (var i = 0; i < targets.length; i++) targets[i].classList.add('rv-in'); }
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) { entries[i].target.classList.add('rv-in'); io.unobserve(entries[i].target); }
+      }
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+    for (var t = 0; t < targets.length; t++) io.observe(targets[t]);
+    setTimeout(showAll, 5000);
+  } else {
+    showAll();
+  }
+  var hero = document.getElementById('heroArt');
+  if (hero) requestAnimationFrame(function(){ hero.classList.add('rv-in'); });
+
+  var stages = [].slice.call(document.querySelectorAll('[data-stage]'));
+  var ledger = document.querySelector('.ledger');
+  var pending = false;
+
+  function update(){
+    pending = false;
+    var vh = window.innerHeight || 800;
+    for (var i = 0; i < stages.length; i++) {
+      var el = stages[i], r = el.getBoundingClientRect();
+      if (r.bottom < -vh || r.top > vh * 2) continue;
+      var p = (vh - r.top) / (vh + r.height);
+      p = p < 0 ? 0 : (p > 1 ? 1 : p);
+      var c = ((r.top + r.height / 2) - vh / 2) / vh;
+      c = c < -1.3 ? -1.3 : (c > 1.3 ? 1.3 : c);
+      el.style.setProperty('--p', p.toFixed(4));
+      el.style.setProperty('--c', c.toFixed(4));
+    }
+    if (ledger) {
+      var de = document.documentElement;
+      var max = Math.max(1, de.scrollHeight - de.clientHeight);
+      var sp = (window.pageYOffset || de.scrollTop) / max;
+      ledger.style.setProperty('--scroll', (sp < 0 ? 0 : sp > 1 ? 1 : sp).toFixed(4));
+    }
+  }
+  function onScroll(){ if (!pending) { pending = true; requestAnimationFrame(update); } }
+
+  update();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(onScroll);
+})();
+</script>
+
+</body>
+</html>
